@@ -1,0 +1,4 @@
+lask-SQLAlchemy
+flask
+psycopg2-binary
+flask-login
