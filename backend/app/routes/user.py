@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template,request
 
 # Import any necessary services or models
 
@@ -9,3 +9,7 @@ def profile():
     # Assume we have a function to get user info
     # user_info = get_user_info(current_user.id)
     return render_template('profile.html')  # , user=user_info)
+
+# @user_bp.route('/recommendations', methods=['GET'])
+# def recommendations():
+        

@@ -2,3 +2,6 @@ lask-SQLAlchemy
 flask
 psycopg2-binary
 flask-login
+Flask-Migrate
+Flask-PyMongo
+Flask-MongoEngine

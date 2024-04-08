@@ -5,15 +5,21 @@ class Config:
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
-    SECRET_KEY = os.getenv('SECRET_KEY', 'your_secret_key')
+    SECRET_KEY = os.getenv('SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
-    MONGODB_URI = os.getenv('MONGODB_URI')
+    MONGO_URI = os.getenv('MONGO_URI')
 
 class DevelopmentConfig(Config):
     """Development configuration class. Overrides some defaults."""
     DEBUG = True
     SQLALCHEMY_ECHO = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    MONGO_URI = os.getenv('MONGO_URI')
+    MONGODB_SETTINGS: dict = {
+        'db': 'eLeetNavigator',
+        'host': 'localhost',
+        'port': 27017
+    }
 
 class TestingConfig(Config):
     """Testing configuration class. Overrides some defaults for testing."""

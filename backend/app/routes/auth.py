@@ -1,5 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session
 from app.services.auth_service import authenticate_user, logout_user, register_user
+from flask_login import current_user
 
 # Create a Blueprint for authentication
 auth_bp = Blueprint('auth', __name__)
@@ -25,7 +26,7 @@ def logout():
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    if 'user_id' in session:
+    if current_user.is_authenticated:
         # Redirect to profile if already logged in
         return redirect(url_for('user.profile'))
 
@@ -33,10 +34,12 @@ def register():
         # Extract registration details from request
         username = request.form.get('username')
         password = request.form.get('password')
-        email = request.form.get('email')  # Assuming email is part of the registration form
-
+        email = request.form.get('email')
+        
         # Register user
+        print("calling register_user")
         success, message = register_user(username, password, email)
+        print(success, message)
         if success:
             flash('Registration successful. Please log in.', 'success')
             return redirect(url_for('auth.login'))
