@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode Problem Recommender</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        header, footer {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        #container {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        main {
+            flex: 1;
+            margin: 0 20px;
+            background: #fff;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        nav, #right {
+            flex: 0 0 200px;
+        }
+
+        nav {
+            order: -1;
+            background: #f0f0f0;
+            padding: 10px;
+        }
+
+        #right {
+            background: #f9f9f9;
+            padding: 10px;
+        }
+
+        nav ul, #right ul {
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        nav ul li a, #right ul li a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        nav ul li a:hover, #right ul li a:hover {
+            background-color: #ddd;
+        }
+
+        article h2, #right h3 {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            #container {
+                flex-direction: column;
+            }
+
+            nav, #right {
+                flex: 0 0 auto;
+                order: 0;
+            }
+
+            main {
+                margin: 20px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>LeetCode Problem Recommender</h1>
+</header>
+
+<div id="container">
+
+    <nav>
+        <h3>Categories</h3>
+        <ul>
+            <li><a href="#">Arrays</a></li>
+            <li><a href="#">Strings</a></li>
+            <li><a href="#">Linked Lists</a></li>
+            <li><a href="#">Trees</a></li>
+            <li><a href="#">Graphs</a></li>
+            <li><a href="#">Dynamic Programming</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <article>
+            <h2>Recommended Problems</h2>
+            <ul>
+                <!-- Dynamically populate this list based on user preferences or selections -->
+                <li><a href="https://leetcode.com/problems/two-sum/">Two Sum</a></li>
+                <li><a href="https://leetcode.com/problems/add-two-numbers/">Add Two Numbers</a></li>
+                <li><a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/">Longest Substring Without Repeating Characters</a></li>
+                <li><a href="https://leetcode.com/problems/merge-two-sorted-lists/">Merge Two Sorted Lists</a></li>
+                <!-- Add more problems as needed -->
+            </ul>
+        </article>
+    </main>
+
+    <div id="right">
+        <h3>Profile</h3>
+        <ul>
+            <li><a href="#">My Progress</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Log Out</a></li>
+        </ul>
+    </div>
+
+</div>
+
+<footer>
+    <p>&copy; 2024 eLeetNavigator. All Rights Reserved.</p>
+</footer>
+
+</body>
+</html>

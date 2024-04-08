@@ -11,11 +11,12 @@ def login():
         # Extract login credentials from request
         username = request.form.get('username')
         password = request.form.get('password')
-        
+        return redirect(url_for('user.dashboard'))
         # Authenticate user
         if authenticate_user(username, password):
-            return redirect(url_for('user.profile'))  # Assuming there's a profile view in user routes
+            return redirect(url_for('user.dashboard'))  # Assuming there's a profile view in user routes
         else:
+            print("Invalid User")
             flash('Invalid username or password')
     return render_template('login.html')
 

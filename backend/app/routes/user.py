@@ -12,4 +12,10 @@ def profile():
 
 # @user_bp.route('/recommendations', methods=['GET'])
 # def recommendations():
+
+@user_bp.route('/dashboard')
+def dashboard():
+    # Assume we have a function to get user info
+    # user_info = get_user_info(current_user.id)
+    return render_template('dashboard.html')  # , user=user_info)
         
