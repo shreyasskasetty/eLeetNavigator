@@ -39,9 +39,14 @@ Make sure you have MongoDb Compass and MongoDB Community downloaded in your mach
 ```bash
 git clone https://github.com/shreyasskasetty/eLeetNavigator.git
 cd eLeetNavigator
+cd backend
 ```
 **Set up development ENV variables**
-1. Open python interpreter and run `import secrets`. Run the following command to get a secret key: `secrets.token_hex(20)`
+1. Download the required python libraries. The libraries are listed in a `requirements.txt` file.
+```bash
+pip install -r requirements. txt
+```
+2. Open python interpreter and run `import secrets`. Run the following command to get a secret key: `secrets.token_hex(20)`
 3. Export the secret key using the following command:
 ```bash
 export SECRET_KEY='<secret_key>'
