@@ -1,4 +1,4 @@
-lask-SQLAlchemy
+flask-SQLAlchemy
 flask
 psycopg2-binary
 flask-login
