@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template,request
 
 # Import any necessary services or models
+from app.services.user_info_service import create_user_info
+from app.models.mongodb_models import UserInfo
 
 user_bp = Blueprint('user', __name__)
 
@@ -18,4 +20,10 @@ def dashboard():
     # Assume we have a function to get user info
     # user_info = get_user_info(current_user.id)
     return render_template('dashboard.html')  # , user=user_info)
+
+@user_bp.route('/userInfo' , methods=['POST'])
+def populate_user_info():
+    user_data = request.get_json()
+    new_user = UserInfo(**user_data)
+    return create_user_info(new_user)
         

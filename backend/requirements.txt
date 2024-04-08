@@ -4,4 +4,4 @@ psycopg2-binary
 flask-login
 Flask-Migrate
 Flask-PyMongo
-Flask-MongoEngine
+git+https://github.com/idoshr/flask-mongoengine.git@1.0.1
