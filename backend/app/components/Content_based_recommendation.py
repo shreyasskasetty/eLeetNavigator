@@ -7,7 +7,7 @@ from pandas import pandas as pd
 
 class ContentBased(RecommendationService):
     def __init__(self):
-        self.df = pd.read_csv(current_app.open_resource('resources/cos-sim-desc-and-topics.csv')).set_index('Unnamed: 0')
+        self.df = pd.read_csv(current_app.open_resource('resources/content-similarity.csv')).set_index('Unnamed: 0')
         pass
 
     def has_solved_before(self, prob_id, user_history):
