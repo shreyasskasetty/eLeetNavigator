@@ -8,8 +8,9 @@ from app.routes.user import user_bp
 
 # from app.models.postgres_models import db
 # from app.models.postgres_models import db, User
-
+from app.components.Content_based_recommendation import ContentBased
 from app.models.mongodb_models import db, User
+from flask import current_app
 
 def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__)
@@ -30,6 +31,10 @@ def create_app(config_class=DevelopmentConfig):
     def ctx():
         return {'app': app, 'db': db}
     
+    @app.before_request
+    def load_recommendation_list():
+        current_app.config['recom_list'] = [ContentBased()]
+
     @login_manager.user_loader
     def load_user(user_id):
         return User.objects(pk=user_id).first()

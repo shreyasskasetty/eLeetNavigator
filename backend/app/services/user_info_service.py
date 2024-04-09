@@ -10,7 +10,7 @@ def check_user_exists(username: str):
 
     return True, user
 
-def check_user_info_exists(username: str)-> tuple[bool,User]:
+def get_user_info_exists(username: str)-> tuple[bool,UserInfo]:
     if not username:
         return False, None
     
@@ -29,7 +29,7 @@ def create_user_info(userInfo: UserInfo):
         return "Username doesn't exist in the records. Register at the dashboard.", 400
     
 
-    exists, _ = check_user_info_exists(userInfo.username)
+    exists, _ = get_user_info_exists(userInfo.username)
     if exists:
         return "User_info already exists", 400
 
@@ -37,4 +37,3 @@ def create_user_info(userInfo: UserInfo):
     new_user_info = userInfo.save()
 
     return "Added Successfully", 200
-    
