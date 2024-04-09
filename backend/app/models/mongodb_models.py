@@ -1,4 +1,5 @@
 from flask_mongoengine import MongoEngine
+from datetime import datetime
 from mongoengine import Document, EmbeddedDocument, fields
 
 db = MongoEngine()
@@ -29,10 +30,12 @@ class ProblemLog(EmbeddedDocument):
     timestamp = fields.DateTimeField(required=True)
     time_beats = fields.FloatField(required=True)
     memory_beats = fields.FloatField(required=True)
+    accepted = fields.BooleanField(required=False, default=False)
 
 class History(EmbeddedDocument):
     problem_id = fields.StringField(required=True)
     problem_log = fields.ListField(fields.EmbeddedDocumentField(ProblemLog))
+    last_update = fields.DateTimeField(required=False, default=datetime.now())
 
 class Skills(EmbeddedDocument):
     advance = fields.ListField(fields.EmbeddedDocumentField(Skill))

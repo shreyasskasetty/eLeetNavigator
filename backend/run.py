@@ -14,7 +14,7 @@ def configure_app(env):
         config_class = TestingConfig
 
     app = create_app(config_class)
-    return app,config_class
+    return app, config_class
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("run", description="Enter the required arguments")
