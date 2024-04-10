@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template,request
+from flask_cors import cross_origin
 
 # Import any necessary services or models
-from app.services.user_info_service import create_user_info
-from app.models.mongodb_models import UserInfo
+from app.services.user_info_service import create_user_info, update_problem_log
+from app.models.mongodb_models import UserInfo, History
 from app.services.recommedation_service import get_recommendation
 
 
@@ -16,9 +17,13 @@ def profile():
     return render_template('profile.html')  # , user=user_info)
 
 @user_bp.route('/recommendations', methods=['GET'])
+@cross_origin()
 def recommendations():
     user = request.args.get('username')
-    return get_recommendation(username=user)
+    limit = request.args.get('limit')
+    if not limit:
+        limit = 10
+    return get_recommendation(username=user, limit=limit)
 
 @user_bp.route('/dashboard')
 def dashboard():
@@ -31,4 +36,13 @@ def populate_user_info():
     user_data = request.get_json()
     new_user = UserInfo(**user_data)
     return create_user_info(new_user)
+
+@user_bp.route('/problemLog', methods=['POST'])
+def problem_log():
+    user_name = request.args.get('username')
+    history_data = request.get_json()
+    print(history_data)
+    history = History(**history_data)
+    return update_problem_log(user_name, history)
+
         
