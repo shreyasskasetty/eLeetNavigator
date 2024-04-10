@@ -3,7 +3,7 @@ from app.services.user_info_service import get_user_info_exists
 
 from flask import current_app
 
-def get_recommendation(username: str, limit=10):
+def get_recommendation(username: str, limit):
     if not username:
         return "Invalid UserName", 400
     

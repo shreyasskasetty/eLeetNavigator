@@ -5,6 +5,7 @@ class Config:
     DEBUG = False
     TESTING = False
     CSRF_ENABLED = True
+    CORS_HEADERS = 'content-type'
     SECRET_KEY = os.getenv('SECRET_KEY')
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL')
     MONGO_URI = os.getenv('MONGO_URI')

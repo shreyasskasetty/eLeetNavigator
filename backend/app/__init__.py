@@ -11,12 +11,15 @@ from app.routes.user import user_bp
 from app.components.Content_based_recommendation import ContentBased
 from app.models.mongodb_models import db, User
 from flask import current_app
+from flask_cors import CORS
+
 
 def create_app(config_class=DevelopmentConfig):
     app = Flask(__name__)
     app.config.from_object(config_class)
     db.init_app(app)
     mongo = PyMongo(app)
+    cors = CORS(app)
 
     # print("Initializing Flask-Migrate...")
     # migrate = Migrate(app, db)
