@@ -1,0 +1,14 @@
+#root{
+  display: flex;
+  flex: 1;
+  min-width: 350px;
+  min-height: 700px;
+}
+
+.main-content {
+  overflow-y: auto;
+  margin-top: 50px;
+  height: calc(100vh - 64px); /* Adjust based on AppBar height */
+  padding: 8px;
+  
+}
