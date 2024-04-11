@@ -23,16 +23,15 @@ class SolvedProblem(EmbeddedDocument):
     beats = fields.FloatField(required=True)
 
 class ProblemLog(EmbeddedDocument):
-    attempts = fields.IntField(required=True)
-    runtime = fields.IntField(required=True)
-    memory = fields.IntField(required=True)
+    runtime = fields.FloatField(required=False)
+    memory = fields.FloatField(required=False)
     language = fields.StringField(required=True)
     timestamp = fields.DateTimeField(required=True)
-    time_beats = fields.FloatField(required=True)
-    memory_beats = fields.FloatField(required=True)
+    time_beats = fields.FloatField(required=False)
+    memory_beats = fields.FloatField(required=False)
     accepted = fields.BooleanField(required=False, default=False)
     def __repr__(self):
-        return f"ProblemLog(attempts={self.attempts}, runtime={self.runtime}, memory={self.memory}, language='{self.language}', timestamp={self.timestamp}, time_beats={self.time_beats}, memory_beats={self.memory_beats}, accepted={self.accepted})"
+        return f"ProblemLog(runtime={self.runtime}, memory={self.memory}, language='{self.language}', timestamp={self.timestamp}, time_beats={self.time_beats}, memory_beats={self.memory_beats}, accepted={self.accepted})"
 
 
 class History(EmbeddedDocument):
