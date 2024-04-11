@@ -31,11 +31,18 @@ class ProblemLog(EmbeddedDocument):
     time_beats = fields.FloatField(required=True)
     memory_beats = fields.FloatField(required=True)
     accepted = fields.BooleanField(required=False, default=False)
+    def __repr__(self):
+        return f"ProblemLog(attempts={self.attempts}, runtime={self.runtime}, memory={self.memory}, language='{self.language}', timestamp={self.timestamp}, time_beats={self.time_beats}, memory_beats={self.memory_beats}, accepted={self.accepted})"
+
 
 class History(EmbeddedDocument):
     problem_id = fields.StringField(required=True)
     problem_log = fields.ListField(fields.EmbeddedDocumentField(ProblemLog))
     last_update = fields.DateTimeField(required=False, default=datetime.now())
+
+    def __repr__(self):
+        problem_logs_str = ', '.join([repr(log) for log in self.problem_log])
+        return f"History(problem_id='{self.problem_id}', problem_log=[{problem_logs_str}], last_update={self.last_update})"
 
 class Skills(EmbeddedDocument):
     advance = fields.ListField(fields.EmbeddedDocumentField(Skill))
@@ -49,7 +56,7 @@ class UserInfo(Document):
     streak = fields.IntField(required=True)
     languages = fields.ListField(fields.EmbeddedDocumentField(Language))
     skills = fields.EmbeddedDocumentField(Skills)
-    solved_problems = fields.ListField(fields.EmbeddedDocumentField(SolvedProblem), db_field='solved-problems')
+    solved_problems = fields.ListField(fields.EmbeddedDocumentField(SolvedProblem))
     history = fields.ListField(fields.EmbeddedDocumentField(History))
 
     meta = {'collection': 'UserInfo'}
