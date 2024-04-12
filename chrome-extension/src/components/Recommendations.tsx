@@ -3,11 +3,13 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useEffect, useState } from 'react';
 // import axios from 'axios';
 import { CircularProgress } from '@mui/material';
+import Alert from '@mui/material/Alert';
 import { formatProblemString } from '../utility';
 
 function Recommendations() {
   const [recommendations, setRecommendations] = useState<{ list: string[]; title: string; }[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true); // Add loading state
+  const [message, setMessage] = useState("")
   
   const handleCardClick = async (problemName: string) => {
     console.log(`Clicked on: ${problemName}`);
@@ -30,13 +32,33 @@ function Recommendations() {
 
   useEffect(() => {
     chrome.storage.local.get(['eLeetData'], function(result) {
-      console.log('Data retrieved from local storage:', result.eLeetData);
-        if(result.eLeetData) {
+      console.log('Data retrieved from local storage AT UI:', result.eLeetData);
+        if(result.eLeetData && result.eLeetData.recommendation) {
           setRecommendations(result.eLeetData.recommendation);
           setIsLoading(false);
+          setMessage("");
         }
         else {
-          setIsLoading(true);
+          if (!result.eLeetData)
+          {
+            setIsLoading(true);
+            console.log("Setting the loading")
+            console.log(!result.eLeetData)
+          }
+          else if (!message && result.eLeetData.username)
+          {
+            setIsLoading(false)
+            setMessage("Loading Recommendations")
+            console.log("Setting the loading recommendation")
+            console.log(!result.eLeetData)
+          }
+          else if(!message)
+          {
+            setIsLoading(false)
+            setMessage("Login to continue")
+            console.log("Setting the login continue")
+            console.log(!result.eLeetData)
+          }
           // handle error here if recommendations are not found.
         }
     });
@@ -65,10 +87,18 @@ function Recommendations() {
       </Box>
     );
   }
+  else if(message)
+  {
+    return(
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Alert severity="warning">{message}</Alert>
+      </Box>
+    )
+  }
 
   return (
     <>
-      {recommendations.map((group, groupIndex) => (
+      {recommendations?.map((group, groupIndex) => (
           <Box key={groupIndex} sx={{ marginTop: 3 }}>
             <Typography
               sx={{
