@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 class Config:
     """Base configuration class. Contains default settings."""
@@ -14,8 +15,10 @@ class DevelopmentConfig(Config):
     """Development configuration class. Overrides some defaults."""
     DEBUG = True
     SQLALCHEMY_ECHO = True
+    GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MONGO_URI = os.getenv('MONGO_URI')
+    PERMANENT_SESSION_LIFETIME = timedelta(days=365)
     MONGODB_SETTINGS: dict = {
         'db': 'eLeetNavigator',
         'host': 'localhost',

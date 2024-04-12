@@ -20,7 +20,7 @@ def create_app(config_class=DevelopmentConfig):
     app.config.from_object(config_class)
     db.init_app(app)
     mongo = PyMongo(app)
-    cors = CORS(app)
+    cors = CORS(app, supports_credentials=True)
 
     # print("Initializing Flask-Migrate...")
     # migrate = Migrate(app, db)

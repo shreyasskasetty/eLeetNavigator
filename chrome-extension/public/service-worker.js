@@ -5,8 +5,28 @@ const PROBLEM_LOG_URL = 'user/problemLog'
 const USER_INFO_URL = 'user/userInfo'
 const RECOMMENDATION_URL = 'user/recommendations'
 
+function checkLoginStatus() {
+    return new Promise((resolve, reject) => {
+      chrome.cookies.get({url: "http://localhost:3001", name: "session"}, function(cookie) {
+        if (cookie) {
+          console.log('Authenticated:', cookie.value);
+          resolve(true); // User is logged in
+        } else {
+          console.log('Not authenticated');
+          resolve(false); // User is not logged in
+        }
+      });
+    });
+  }
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if(message.type == "problem_log"){
+    if(message.type == "checkLogin"){
+        checkLoginStatus().then(loggedIn => {
+            sendResponse({ loggedIn });
+          });
+        return true;
+    }
+    else if(message.type == "problem_log"){
         console.log(message)
         fetch(`${BASE_URL}${PROBLEM_LOG_URL}?username=kote`, {
             method: 'POST',

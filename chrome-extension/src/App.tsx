@@ -1,13 +1,23 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css'
 import Navbar from './components/Navbar';
 import BottomNavbar from './components/BottomNavbar';
 function App() {
-  useEffect(()=>{
-    //Note: get cookie details and save it
-    console.log("Estension Clicked")
-  },[]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    chrome.runtime.sendMessage({ type: "checkLogin" }, (response) => {
+      console.log(response.loggedIn);
+      setIsLoggedIn(response.loggedIn);
+    });
+  }, []);
 
+  if(!isLoggedIn){
+    return (
+      <div>
+        Please login to <a href="http://localhost:3001/">eLeetNavigator</a>
+      </div >
+    )
+  }
   return (
     <>
       <div>
