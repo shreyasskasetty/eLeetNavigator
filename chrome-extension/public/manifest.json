@@ -1,27 +1,22 @@
 {
-    "name":"eLeetNavigator",
-    "manifest_version":3,
-    "version":"1.0.0",
-    "action":{
-        "default_popup":"index.html"
-    },
-    "background": {
-        "service_worker": "service-worker.js"
-    },
-    "permissions":[
-        "scripting",
-        "tabs"
-    ],
-    "icons":{
-        "32":"logo2.png"
-    },
-    "content_scripts": [
-        {
-          "matches": ["https://leetcode.com/*"],
-          "js": ["contentScript.js"]
-        }
-    ],
-    "host_permissions":[
-        "https://leetcode.com/*"
-    ]
+  "name": "eLeetNavigator",
+  "manifest_version": 3,
+  "version": "1.0.0",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "permissions": ["scripting", "tabs", "storage"],
+  "icons": {
+    "32": "logo2.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://leetcode.com/*"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "host_permissions": ["https://leetcode.com/*"]
 }
