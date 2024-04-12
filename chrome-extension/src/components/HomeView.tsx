@@ -1,8 +1,9 @@
 import Recommendations from './Recommendations';
 import { Button } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 export default function HomeView(){
-
+  const [userName, setUserName] = useState("")
 // const collectData = async () => {
 //     let [tab] = await chrome.tabs.query({active: true});
 //     chrome.scripting.executeScript({
@@ -243,13 +244,30 @@ const redirectToNewPage = async (url: string): Promise<void> => {
     }
   });
 };
+    function fetchUserData(){
+      let user_name = ""
+      chrome.storage.local.get(['eLeetData'], function(result) {
+        console.log('Data retrieved from local storage:', result.eLeetData);
+          if(result.eLeetData) {
+            user_name =  result.eLeetData.username;
+            if(user_name !== userName)
+              {
+                setUserName(user_name)
+              }
+          }
+      });
+      return user_name;
+    }
 
+    useEffect(()=>{
+      fetchUserData();
+    }, [])
     return (
         <>
         <Button onClick={()=>redirectToNewPage("https://leetcode.com/shreyas30kasetty/")}>
             Click me
         </Button>
-        <Recommendations />
+        {userName? <Recommendations /> : <></>}
         </>
     )
 }

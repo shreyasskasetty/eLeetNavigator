@@ -1,7 +1,7 @@
 import { Card, CardActionArea, Typography, Grid, Box } from '@mui/material';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+// import axios from 'axios';
 import { CircularProgress } from '@mui/material';
 import { formatProblemString } from '../utility';
 
@@ -29,21 +29,33 @@ function Recommendations() {
   };
 
   useEffect(() => {
-    setIsLoading(true); // Start loading
-    axios.get('http://localhost:3000/user/recommendations', {
-      params: {
-        'username': 'shreyas30kasetty'
-      }
-    })
-    .then(function (response) {
-      setRecommendations(response.data); // Assuming the response data is directly in the required format
-      console.log(response.data); // Handle the response data in here
-      setIsLoading(false); // Stop loading once data is received
-    })
-    .catch(function (error) {
-      setIsLoading(false); // Stop loading on error
-      console.error(error); // Handle errors here
+    chrome.storage.local.get(['eLeetData'], function(result) {
+      console.log('Data retrieved from local storage:', result.eLeetData);
+        if(result.eLeetData) {
+          setRecommendations(result.eLeetData.recommendation);
+          setIsLoading(false);
+        }
+        else {
+          setIsLoading(true);
+          // handle error here if recommendations are not found.
+        }
     });
+
+    // setIsLoading(true); // Start loading
+    // axios.get('http://localhost:3000/user/recommendations', {
+    //   params: {
+    //     'username': 'kote'
+    //   }
+    // })
+    // .then(function (response) {
+    //   setRecommendations(response.data); // Assuming the response data is directly in the required format
+    //   console.log(response.data); // Handle the response data in here
+    //   setIsLoading(false); // Stop loading once data is received
+    // })
+    // .catch(function (error) {
+    //   setIsLoading(false); // Stop loading on error
+    //   console.error(error); // Handle errors here
+    // });
   }, []);
 
   if (isLoading) {
