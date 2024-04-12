@@ -4,15 +4,48 @@ import traceback
 
 RETRY_LIMIT = 3
 
-def check_user_exists(username: str):
-    if not username:
+def create_user(userId: str, emailId: str, name: str='', imageUrl: str='', userName: str='')->tuple[bool, User]:
+    if not userId or not emailId:  # Ensuring required fields are not empty
+        return False, None
+    newUser = User()
+    newUser.emailId = emailId
+    newUser.userId = userId
+    newUser.name = name
+    newUser.imageUrl = imageUrl
+    if userName:
+        newUser.userName = userName
+    
+    try:
+        new_user_info = newUser.save()
+        return True, new_user_info
+    except Exception as e:
+        print(e)
+        return False, None
+        
+def check_user_exists(userId: str) -> tuple[bool, User]:
+    if not userId:
         return False, None
     
-    user = User.objects(username=username).first()
+    user = User.objects(userId=userId).first()
     if not user:
         return False, None
 
     return True, user
+
+def update_user_name(userId: str, userName: str) -> bool:
+    exists, user = check_user_exists(userId)
+
+    if not exists:
+        return False
+    
+    user.userName = userName
+
+    try:
+        user.save()
+        return True
+    except Exception as e:
+        print(e)
+        return False
 
 def get_user_info_exists(username: str)-> tuple[bool,UserInfo]:
     if not username:
