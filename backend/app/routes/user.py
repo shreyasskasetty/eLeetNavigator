@@ -2,7 +2,7 @@ from flask import Blueprint, render_template,request
 from flask_cors import cross_origin
 
 # Import any necessary services or models
-from app.services.user_info_service import create_user_info, update_problem_log
+from app.services.user_info_service import create_user_info, update_problem_log, update_user_info
 from app.models.mongodb_models import UserInfo, History
 from app.services.recommedation_service import get_recommendation
 
@@ -34,15 +34,19 @@ def dashboard():
 @user_bp.route('/userInfo' , methods=['POST'])
 def populate_user_info():
     user_data = request.get_json()
-    new_user = UserInfo(**user_data)
-    return create_user_info(new_user)
+    new_user = request.args.get('newuser')
+    user_info = UserInfo(**user_data)
+    
+    if new_user: 
+        return create_user_info(user_info, 1)
+    else:
+        return update_user_info(user_info, 1)
 
 @user_bp.route('/problemLog', methods=['POST'])
 def problem_log():
     user_name = request.args.get('username')
     history_data = request.get_json()
     print(history_data)
+    print(user_name)
     history = History(**history_data)
-    return update_problem_log(user_name, history)
-
-        
+    return update_problem_log(user_name, history, 1)
