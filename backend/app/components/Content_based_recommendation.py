@@ -15,7 +15,6 @@ class ContentBased(RecommendationService):
         if not history:
             return False
         
-        print(history[0].problem_id)
         return any(element.accepted for element in history[0].problem_log)
 
     def get_nlargest(self, prob_id , user_info ,limit):
@@ -37,7 +36,10 @@ class ContentBased(RecommendationService):
         if not user_info or len(user_info.history) == 0:
             return None
     
-        most_recent_history = max(user_info.history, key=lambda x: x.last_update)
+        solved_problems = [prob for prob in user_info.history if 
+                           any(log.accepted for log in prob.problem_log)]
+        most_recent_history = max(solved_problems, key=lambda x: x.last_update)
+        print("Most recent problem", most_recent_history.problem_id)
         return most_recent_history.problem_id
 
 
