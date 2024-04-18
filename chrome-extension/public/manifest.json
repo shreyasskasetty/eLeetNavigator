@@ -24,7 +24,8 @@
         }
     ],
     "host_permissions":[
-        "http://localhost:3001/*",
-        "https://leetcode.com/*"
+        "http://localhost:3001/",
+        "http://localhost:3000/",
+        "https://leetcode.com/"
     ]
 }
