@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import jsonify
 from app.models.mongodb_models import UserInfo, User, History
 import traceback
@@ -36,6 +37,7 @@ def update_user_name(userId: str, userName: str) -> bool:
     exists, user = check_user_exists(userId)
 
     if not exists:
+        print('User does not exist')
         return False
     
     user.userName = userName
@@ -47,24 +49,24 @@ def update_user_name(userId: str, userName: str) -> bool:
         print(e)
         return False
 
-def get_user_info_exists(username: str)-> tuple[bool,UserInfo]:
-    if not username:
+def get_user_info_exists(userId: str)-> tuple[bool,UserInfo]:
+    if not userId:
         return False, None
     
-    user_info = UserInfo.objects(username=username).first()
+    user_info = UserInfo.objects(userId=userId).first()
     if not user_info:
         return False, None
     
     return True, user_info
 
 def create_user_info(userInfo: UserInfo, retry: int):
-    exists, user = check_user_exists(userInfo.username)
+    exists, user = check_user_exists(userInfo.userId)
     if not exists:
         response = {"message" : "Username doesn't exist in the records. Register at the dashboard."}
         return jsonify(response), 400
     
 
-    exists, _ = get_user_info_exists(userInfo.username)
+    exists, _ = get_user_info_exists(userInfo.userId)
     if exists:
         response = {"message" : "User_info already exists"}
         return jsonify(response), 400
@@ -72,7 +74,11 @@ def create_user_info(userInfo: UserInfo, retry: int):
     userInfo.emailId = user.email
 
     try:
+        current_timestamp = datetime.now()
+        timestamp_string = current_timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        user.userInfoUpdatedTs = timestamp_string
         new_user_info = userInfo.save()
+        user.save()
         response = {"message" : "Added Successfully"}
         return jsonify(response) , 200
     except Exception as e:
@@ -83,11 +89,13 @@ def create_user_info(userInfo: UserInfo, retry: int):
             return create_user_info(userInfo, retry + 1)
 
 def update_user_info(updatedUserInfo: UserInfo, retry : int):
-    exists, user_info = get_user_info_exists(updatedUserInfo.username)
+    exists, user_info = get_user_info_exists(updatedUserInfo.userId)
 
     if not exists:
         return create_user_info(updatedUserInfo)
     
+    exists, user = check_user_exists(updatedUserInfo.userId)
+
     user_info.languages = updatedUserInfo.languages
     user_info.rank = updatedUserInfo.rank
     user_info.streak = updatedUserInfo.streak
@@ -95,6 +103,10 @@ def update_user_info(updatedUserInfo: UserInfo, retry : int):
     user_info.solved_problems = updatedUserInfo.solved_problems
 
     try:
+        current_timestamp = datetime.now()
+        timestamp_string = current_timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        user.userInfoUpdatedTs = timestamp_string
+        user.save()
         user_info.save()
         response = {"message" : "Updated Successfully"}
         return jsonify(response) , 200

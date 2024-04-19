@@ -10,6 +10,7 @@ class User(db.Document):
     userId = db.StringField(required=True, unique=True)
     imageUrl = db.StringField(required=False)
     name = db.StringField(required=False)
+    userInfoUpdatedTs = db.StringField(required=False)
 
 class Language(EmbeddedDocument):
     language = fields.StringField(required=True)
