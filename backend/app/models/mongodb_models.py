@@ -5,9 +5,12 @@ from mongoengine import Document, EmbeddedDocument, fields
 db = MongoEngine()
 
 class User(db.Document):
-    username = db.StringField(required=True, unique=True)
-    email = db.StringField(required=True, unique=True)
-    password = db.StringField(required=True)
+    userName = db.StringField(required=False, unique=True)
+    emailId = db.StringField(required=True, unique=True)
+    userId = db.StringField(required=True, unique=True)
+    imageUrl = db.StringField(required=False)
+    name = db.StringField(required=False)
+    userInfoUpdatedTs = db.StringField(required=False)
 
 class Language(EmbeddedDocument):
     language = fields.StringField(required=True)
@@ -49,6 +52,7 @@ class Skills(EmbeddedDocument):
     fundamental = fields.ListField(fields.EmbeddedDocumentField(Skill))
 
 class UserInfo(Document):
+    userId = fields.StringField(required=True, unique=True)
     username = fields.StringField(required=True)
     emailId = fields.EmailField(required=True)
     rank = fields.IntField(required=True)
