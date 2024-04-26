@@ -71,8 +71,6 @@ def create_user_info(userInfo: UserInfo, retry: int):
         response = {"message" : "User_info already exists"}
         return jsonify(response), 400
 
-    userInfo.emailId = user.email
-
     try:
         current_timestamp = datetime.now()
         timestamp_string = current_timestamp.strftime("%Y-%m-%d %H:%M:%S")
