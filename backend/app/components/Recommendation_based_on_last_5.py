@@ -27,6 +27,7 @@ class BasedOnLastNProblems(RecommendationService):
                 average_cos_sim = self.df[prob_ids[i]]
                 count = 1
                 break
+            i += 1
 
         if count == 0:
             return []

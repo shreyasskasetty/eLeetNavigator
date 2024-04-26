@@ -10,6 +10,7 @@ from app.routes.user import user_bp
 # from app.models.postgres_models import db, User
 from app.components.Content_based_recommendation import ContentBased
 from app.components.Recommendation_based_on_last_5 import BasedOnLastNProblems
+from app.components.Recommendation_based_on_difficulty import DifficultyBasedRecommendation
 from app.models.mongodb_models import db, User
 from flask import current_app
 from flask_cors import CORS
@@ -37,7 +38,7 @@ def create_app(config_class=DevelopmentConfig):
     
     @app.before_request
     def load_recommendation_list():
-        current_app.config['recom_list'] = [ContentBased(), BasedOnLastNProblems()]
+        current_app.config['recom_list'] = [ContentBased(), BasedOnLastNProblems(), DifficultyBasedRecommendation()]
 
     @login_manager.user_loader
     def load_user(user_id):
