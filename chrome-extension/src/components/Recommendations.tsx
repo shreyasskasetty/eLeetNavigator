@@ -1,4 +1,4 @@
-import { Card, CardActionArea, Typography, Grid, Box, Button } from '@mui/material';
+import { Card, CardActionArea, Typography, Grid, Box, Button, CircularProgress } from '@mui/material';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useEffect, useState } from 'react';
 import Alert from '@mui/material/Alert';
@@ -26,8 +26,10 @@ const redirectToNewPage = async (url: string): Promise<void> => {
 function Recommendations({currentUser} : any) {
   const [recommendations, setRecommendations] = useState<{ list: string[]; title: string; }[]>([]);
   const [message, setMessage] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   function fetchRecommendation(user_id : string, refresh: boolean = false){
+    setIsLoading(true)
     const message = {
       type: "GET_RECOMMENDATION",
       refresh: refresh,
@@ -40,9 +42,11 @@ function Recommendations({currentUser} : any) {
       {
         setRecommendations(response.data)
         setMessage("")
+        setIsLoading(false)
       }
       else{
         setMessage("Sorry for the incovience. Unable to get recommendations rn")
+        setIsLoading(false)
       }
     })
   }
@@ -80,40 +84,6 @@ function Recommendations({currentUser} : any) {
     }
 
     fetchRecommendation(currentUser.user_id, false)
-
-    // const queryParams = {
-    //   "user_id" : currentUser.user_id,
-    //   "limit" : AppConfig.RECOMMENDATION_LIMIT
-    // }
-    // console.log("Fetching recommendation for ", currentUser.user_id)
-    // console.log(currentUser)
-
-    // api.getRecommendation(queryParams)
-    // .then(function (response){
-    //   setRecommendations(response.data)
-    //   setMessage("")
-    // })
-    // .catch(function(error){
-    //   setMessage("Sorry for the incovience. Unable to get recommendations rn")
-    //   console.log(error)
-    // })
-    
-    
-
-    // axios.get('http://localhost:3000/user/recommendations', {
-    //   params: {
-    //     'username': userName
-    //   }
-    // })
-    // .then(function (response) {
-    //   setRecommendations(response.data); // Assuming the response data is directly in the required format
-    //   console.log(response.data); // Handle the response data in here
-    //   //setIsLoading(false); // Stop loading once data is received
-    // })
-    // .catch(function (error) {
-    //   //setIsLoading(false); // Stop loading on error
-    //   console.error(error); // Handle errors here
-    // });
   }
 
   useEffect(() => {
@@ -123,6 +93,13 @@ function Recommendations({currentUser} : any) {
   if(!currentUser)
   {
     return <></>
+  }
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
   }
   
   if(message)
@@ -141,17 +118,20 @@ function Recommendations({currentUser} : any) {
   }
 
   return (
-    <>
+    <Box sx={{
+      marginTop : '60px',
+    }}>
       {recommendations?.map((group, groupIndex) => (
           <Box key={groupIndex} sx={{ marginTop: 3 }}>
             <Typography
               sx={{
-                  color: 'grey', // Sets the text color to grey
-                  borderColor: 'grey', // Sets the border color to grey
+                  color: 'black', // Sets the text color to grey
+                  borderColor: 'black', // Sets the border color to grey
                   borderWidth: '1px', // Sets the border width to 1px
                   borderBottom: '1px solid #e0e0e0',
                   borderTop: '1px solid #e0e0e0',
                   padding: '10px 0px 10px 20px', // Adds some vertical padding for visual spacing
+                  fontWeight: 'bold',
               }}
               >
               {group.title}
@@ -197,7 +177,7 @@ function Recommendations({currentUser} : any) {
             </Grid>
           </Box>
           ))}
-    </>
+    </Box>
   );
 }
 
