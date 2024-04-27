@@ -22,7 +22,7 @@ def get_current_user():
         "user_id": user_id,
         "new_user" : new_user,
         "user_info_exists" : user_info_exists,
-        "username" : user_name
+        "user_name" : user_name
     })
 
 def token_required(f):
@@ -94,7 +94,7 @@ def addUserName():
     userName = data['body']['userName']
     status = update_user_name(userId, userName)
     if status:
-        session['username'] = userName
+        session['user_name'] = userName
         return jsonify({'message': 'Successfully Updated'}), 200
     else:
         return jsonify({'message': 'Update failed'}), 400

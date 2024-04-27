@@ -10,17 +10,37 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null)
+
+  //  function fetchCurrentUserFromStorage(){
+  //   // chrome.storage.local.get(['eLeetCurrentUser'], function(result) {
+  //   //   console.log('Current user data from storage:', result);
+  //   // });
+
+  //   const message = {
+  //     type : "eLeetCurrentUser"
+  //   }
+  //   chrome.runtime.sendMessage(message, (response)=>{
+  //     console.log("response at the front end.")
+  //     console.log(response);
+  //   })
+  // }
+
+  function getCurrentUserFromBackend(){
+    api.getCurrentUser().then((res)=>{
+      console.log("Current User" , res);
+      setIsLoading(false);
+      setIsLoggedIn(true);
+      setCurrentUser(res.data)
+    }).catch((error:any) =>{
+      setIsLoading(false);
+      console.log(error)
+    });
+  }
+
   useEffect(() => {
-      setIsLoading(true);
-      api.getCurrentUser().then((res)=>{
-        console.log("Current User" , res);
-        setIsLoading(false);
-        setIsLoggedIn(true);
-        setCurrentUser(res.data)
-      }).catch((error:any) =>{
-        setIsLoading(false);
-        console.log(error)
-      });
+    setIsLoading(true);
+    getCurrentUserFromBackend();
+    //fetchCurrentUserFromStorage();
   }, []);
 
   if(isLoading){

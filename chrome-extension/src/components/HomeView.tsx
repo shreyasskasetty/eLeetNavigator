@@ -36,8 +36,8 @@ export default function HomeView({currentUser} : any){
       fetchUserData();
     }, [])
     return (
-        <div>
+        <>
           {userName? <Recommendations currentUser={currentUser}/> : <></>}
-        </div>
+        </>
     )
 }

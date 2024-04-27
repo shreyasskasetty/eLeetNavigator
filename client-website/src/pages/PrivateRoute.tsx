@@ -14,14 +14,6 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const [isNewUser, setNewUser] = useState(false);
   const [userName, setUserName] = useState('');
 
-  function storeUserInfo(userId: String, userName: String){
-     const eLeetDataUI = {
-      userId : userId,
-      userName: userName
-     } 
-     localStorage.setItem("eLeetDataUI", JSON.stringify(eLeetDataUI));
-  }
-
   async function authenticate()
   {
     setIsLoading(true);
@@ -50,7 +42,6 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
         }
         setUserId(response.user_id)
         setIsLoading(false);
-        storeUserInfo(response.userId, user_name)
       }).catch((error: any)=>{
         setIsLoading(false);
         console.log(error)
