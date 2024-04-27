@@ -17,13 +17,13 @@ function ProfileView() {
   return <div>Profile View</div>;
 }
 
-export default function BottomNavbar() {
+export default function BottomNavbar({currentUser}:any) {
   const [value, setValue] = React.useState(0);
 
   let contentView;
   switch (value) {
     case 0:
-      contentView = <HomeView />;
+      contentView = <HomeView currentUser={currentUser}/>;
       break;
     case 1:
       contentView = <RecentView />;

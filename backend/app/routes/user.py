@@ -19,10 +19,12 @@ def profile():
 @user_bp.route('/recommendations', methods=['GET'])
 @cross_origin()
 def recommendations():
-    userId = request.args.get('userId')
+    userId = request.args.get('user_id')
     limit = request.args.get('limit')
     if not limit:
         limit = 10
+    else:
+        limit = int(limit)
     return get_recommendation(userId=userId, limit=limit)
 
 @user_bp.route('/dashboard')

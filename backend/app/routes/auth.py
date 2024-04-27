@@ -11,7 +11,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/@me',methods=['GET'])
 def get_current_user():
     user_id = session.get("user_id")
-    user_name = session.get("username")
+    user_name = session.get("user_name")
     new_user = session.get("new_user")
     user_info_exists = session.get("user_info_exists")
 
@@ -38,7 +38,6 @@ def token_required(f):
                 raise ValueError('Wrong issuer.')
 
             exists, user = check_user_exists(idinfo['sub'])
-            print(idinfo)
 
             if exists:
                 session['new_user'] = False

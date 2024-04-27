@@ -9,13 +9,14 @@ import Welcome from './pages/Welcome';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [currentUser, setCurrentUser] = useState(null)
   useEffect(() => {
       setIsLoading(true);
       api.getCurrentUser().then((res)=>{
-        console.log(res);
+        console.log("Current User" , res);
         setIsLoading(false);
         setIsLoggedIn(true);
+        setCurrentUser(res.data)
       }).catch((error:any) =>{
         setIsLoading(false);
         console.log(error)
@@ -41,7 +42,7 @@ function App() {
     <>
       <div>
         <Navbar />
-        <BottomNavbar/>
+        <BottomNavbar currentUser={currentUser}/>
       </div>
 
     </>

@@ -1,7 +1,7 @@
 import Recommendations from './Recommendations';
 import { useEffect, useState } from 'react';
 
-export default function HomeView(){
+export default function HomeView({currentUser} : any){
   const [userName, setUserName] = useState("")
 // const collectData = async () => {
 //     let [tab] = await chrome.tabs.query({active: true});
@@ -37,7 +37,7 @@ export default function HomeView(){
     }, [])
     return (
         <div>
-          {userName? <Recommendations /> : <></>}
+          {userName? <Recommendations currentUser={currentUser}/> : <></>}
         </div>
     )
 }

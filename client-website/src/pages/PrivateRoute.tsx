@@ -9,7 +9,7 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState('');
+  const [userId, setUserId] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isNewUser, setNewUser] = useState(false);
   const [userName, setUserName] = useState('');
@@ -21,38 +21,42 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
      } 
      localStorage.setItem("eLeetDataUI", JSON.stringify(eLeetDataUI));
   }
+
   async function authenticate()
   {
     setIsLoading(true);
-    api.getCurrentUser().then((res)=>{
-      const response = res.data
-      if(!response)
-      {
-        // Login Failed.
-        return
-      }
-      console.log(response)
-      localStorage.setItem("user" , response)
-      const new_user = response?.new_user
-      const user_info_exists = response?.user_info_exists
-      const user_name = response?.user_name
-      if (new_user)
-      {
-        setNewUser(new_user)
-      }
-
-      if(user_name)
-      {
-        setUserName(user_name)
-      }
-      setIsAuthenticated(response.userId)
-      setIsLoading(false);
-      storeUserInfo(response.userId, user_name)
-    }).catch((error: any)=>{
-      setIsLoading(false);
-      console.log(error)
-      setIsAuthenticated('')
-    })
+    if(!userId)
+    {
+      api.getCurrentUser().then((res)=>{
+        const response = res.data
+        if(!response)
+        {
+          // Login Failed.
+          return
+        }
+        console.log(response)
+        localStorage.setItem("user" , response)
+        const new_user = response?.new_user
+        const user_info_exists = response?.user_info_exists
+        const user_name = response?.user_name
+        if (new_user)
+        {
+          setNewUser(new_user)
+        }
+  
+        if(user_name)
+        {
+          setUserName(user_name)
+        }
+        setUserId(response.user_id)
+        setIsLoading(false);
+        storeUserInfo(response.userId, user_name)
+      }).catch((error: any)=>{
+        setIsLoading(false);
+        console.log(error)
+        setUserId('')
+      })
+    }
   }
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -61,14 +65,14 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault(); // Prevent the default form submit behavior
-      const formData = { 'userName': userName , 'userId' : isAuthenticated };
+      const formData = { 'userName': userName , 'userId' : userId };
 
       try {
           const response = await api.addUserName(formData)
           console.log(response)
           if(response.status == 200)
           {
-            storeUserInfo(isAuthenticated, userName)
+            storeUserInfo(userId, userName)
             console.log("User Name successfully updated")
             setNewUser(false)
             setUserName(userName)
@@ -105,7 +109,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
     )
   }
 
-  return isAuthenticated ? <>{children}</> : <Navigate to="/" />;
+  return userId ? <>{children}</> : <Navigate to="/" />;
 }
 
 export default PrivateRoute;

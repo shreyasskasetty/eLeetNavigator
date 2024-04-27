@@ -1,9 +1,10 @@
 import { Card, CardActionArea, Typography, Grid, Box, Button } from '@mui/material';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useEffect, useState } from 'react';
-// import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import { formatProblemString } from '../utility';
+import AppConfig from '../config/AppConfig';
+import api from '../apis/api';
 const redirectToNewPage = async (url: string): Promise<void> => {
   // Fetch the current active tab
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -22,7 +23,7 @@ const redirectToNewPage = async (url: string): Promise<void> => {
   await chrome.tabs.update(currentTab.id, { url: url });
 };
 
-function Recommendations() {
+function Recommendations({currentUser} : any) {
   const [recommendations, setRecommendations] = useState<{ list: string[]; title: string; }[]>([]);
   const [message, setMessage] = useState("")
   
@@ -45,52 +46,86 @@ function Recommendations() {
     // Implement your click handling logic here
   };
 
-  useEffect(() => {
-    chrome.storage.local.get(['eLeetData'], function(result) {
-      console.log('Data retrieved from local storage AT UI:', result.eLeetData);
-        if(result.eLeetData && result.eLeetData.recommendation) {
-          setRecommendations(result.eLeetData.recommendation);
-          setMessage("");
-        }
-        else {
-          if (!result.eLeetData)
-          {
-            console.log("Setting the loading")
-            console.log(!result.eLeetData)
-          }
-          else if (!message && result.eLeetData.username)
-          {
-            setMessage("Loading Recommendations")
-            console.log("Setting the loading recommendation")
-            console.log(!result.eLeetData)
-          }
-          else if(!message)
-          {
-            setMessage("Login to continue")
-            console.log("Setting the login continue")
-            console.log(!result.eLeetData)
-          }
-          // handle error here if recommendations are not found.
-        }
-    });
+  // function fetchRecommendationFromStorage(){
+  //   chrome.storage.local.get(['eLeetData'], function(result) {
+  //     console.log('Data retrieved from local storage AT UI:', result.eLeetData);
+  //       if(result.eLeetData && result.eLeetData.recommendation) {
+  //         setRecommendations(result.eLeetData.recommendation);
+  //         setMessage("");
+  //       }
+  //       else {
+  //         if (!result.eLeetData)
+  //         {
+  //           console.log("Setting the loading")
+  //           console.log(!result.eLeetData)
+  //         }
+  //         else if (!message && result.eLeetData.username)
+  //         {
+  //           setMessage("Loading Recommendations")
+  //           console.log("Setting the loading recommendation")
+  //           console.log(!result.eLeetData)
+  //         }
+  //         else if(!message)
+  //         {
+  //           setMessage("Login to continue")
+  //           console.log("Setting the login continue")
+  //           console.log(!result.eLeetData)
+  //         }
+  //         // handle error here if recommendations are not found.
+  //       }
+  //   });
+  // }
 
+  function getRecommendationsFromBackend(){
     // setIsLoading(true); // Start loading
+    if (!currentUser)
+    {
+      setMessage("Please login for recommendations")
+      return;
+    } 
+    const queryParams = {
+      "user_id" : currentUser.user_id,
+      "limit" : AppConfig.RECOMMENDATION_LIMIT
+    }
+    console.log("Fetching recommendation for ", currentUser.user_id)
+    console.log(currentUser)
+
+    api.getRecommendation(queryParams)
+    .then(function (response){
+      setRecommendations(response.data)
+      setMessage("")
+    })
+    .catch(function(error){
+      setMessage("Sorry for the incovience. Unable to get recommendations rn")
+      console.log(error)
+    })
+    
+    
+
     // axios.get('http://localhost:3000/user/recommendations', {
     //   params: {
-    //     'username': 'kote'
+    //     'username': userName
     //   }
     // })
     // .then(function (response) {
     //   setRecommendations(response.data); // Assuming the response data is directly in the required format
     //   console.log(response.data); // Handle the response data in here
-    //   setIsLoading(false); // Stop loading once data is received
+    //   //setIsLoading(false); // Stop loading once data is received
     // })
     // .catch(function (error) {
-    //   setIsLoading(false); // Stop loading on error
+    //   //setIsLoading(false); // Stop loading on error
     //   console.error(error); // Handle errors here
     // });
+  }
+
+  useEffect(() => {
+    getRecommendationsFromBackend()
   }, []);
 
+  if(!currentUser)
+  {
+    return <></>
+  }
   
   if(message)
   {
