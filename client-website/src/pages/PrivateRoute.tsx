@@ -63,7 +63,6 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
           console.log(response)
           if(response.status == 200)
           {
-            storeUserInfo(userId, userName)
             console.log("User Name successfully updated")
             setNewUser(false)
             setUserName(userName)

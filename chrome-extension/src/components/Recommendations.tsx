@@ -3,8 +3,8 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useEffect, useState } from 'react';
 import Alert from '@mui/material/Alert';
 import { formatProblemString } from '../utility';
-import AppConfig from '../config/AppConfig';
-import api from '../apis/api';
+//import AppConfig from '../config/AppConfig';
+// import api from '../apis/api';
 const redirectToNewPage = async (url: string): Promise<void> => {
   // Fetch the current active tab
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -26,6 +26,26 @@ const redirectToNewPage = async (url: string): Promise<void> => {
 function Recommendations({currentUser} : any) {
   const [recommendations, setRecommendations] = useState<{ list: string[]; title: string; }[]>([]);
   const [message, setMessage] = useState("")
+
+  function fetchRecommendation(user_id : string, refresh: boolean = false){
+    const message = {
+      type: "GET_RECOMMENDATION",
+      refresh: refresh,
+      user_id: user_id
+    }
+    chrome.runtime.sendMessage(message, (response)=>{
+      console.log("Getting response from service worker")
+      console.log(response);
+      if(response.status)
+      {
+        setRecommendations(response.data)
+        setMessage("")
+      }
+      else{
+        setMessage("Sorry for the incovience. Unable to get recommendations rn")
+      }
+    })
+  }
   
   const handleCardClick = async (problemName: string) => {
     console.log(`Clicked on: ${problemName}`);
@@ -46,36 +66,6 @@ function Recommendations({currentUser} : any) {
     // Implement your click handling logic here
   };
 
-  // function fetchRecommendationFromStorage(){
-  //   chrome.storage.local.get(['eLeetData'], function(result) {
-  //     console.log('Data retrieved from local storage AT UI:', result.eLeetData);
-  //       if(result.eLeetData && result.eLeetData.recommendation) {
-  //         setRecommendations(result.eLeetData.recommendation);
-  //         setMessage("");
-  //       }
-  //       else {
-  //         if (!result.eLeetData)
-  //         {
-  //           console.log("Setting the loading")
-  //           console.log(!result.eLeetData)
-  //         }
-  //         else if (!message && result.eLeetData.username)
-  //         {
-  //           setMessage("Loading Recommendations")
-  //           console.log("Setting the loading recommendation")
-  //           console.log(!result.eLeetData)
-  //         }
-  //         else if(!message)
-  //         {
-  //           setMessage("Login to continue")
-  //           console.log("Setting the login continue")
-  //           console.log(!result.eLeetData)
-  //         }
-  //         // handle error here if recommendations are not found.
-  //       }
-  //   });
-  // }
-
   function getRecommendationsFromBackend(){
     // setIsLoading(true); // Start loading
     if (!currentUser)
@@ -88,22 +78,25 @@ function Recommendations({currentUser} : any) {
       setMessage("Onboard onto the system")
       return;
     }
-    const queryParams = {
-      "user_id" : currentUser.user_id,
-      "limit" : AppConfig.RECOMMENDATION_LIMIT
-    }
-    console.log("Fetching recommendation for ", currentUser.user_id)
-    console.log(currentUser)
 
-    api.getRecommendation(queryParams)
-    .then(function (response){
-      setRecommendations(response.data)
-      setMessage("")
-    })
-    .catch(function(error){
-      setMessage("Sorry for the incovience. Unable to get recommendations rn")
-      console.log(error)
-    })
+    fetchRecommendation(currentUser.user_id, false)
+
+    // const queryParams = {
+    //   "user_id" : currentUser.user_id,
+    //   "limit" : AppConfig.RECOMMENDATION_LIMIT
+    // }
+    // console.log("Fetching recommendation for ", currentUser.user_id)
+    // console.log(currentUser)
+
+    // api.getRecommendation(queryParams)
+    // .then(function (response){
+    //   setRecommendations(response.data)
+    //   setMessage("")
+    // })
+    // .catch(function(error){
+    //   setMessage("Sorry for the incovience. Unable to get recommendations rn")
+    //   console.log(error)
+    // })
     
     
 

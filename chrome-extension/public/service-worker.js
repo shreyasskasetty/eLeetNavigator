@@ -1,11 +1,116 @@
 const SESSION_EXPIRY_LIMIT = 1
 const BASE_URL = 'http://localhost:3000/'
 
+const RECOMMENDATION_LIMIT = 3
+
 const PROBLEM_LOG_URL = 'user/problemLog'
 const USER_INFO_URL = 'user/userInfo'
 const RECOMMENDATION_URL = 'user/recommendations'
 const AT_ME_URL = 'auth/@me'
 
+const SESSION_LENGTH = 2
+
+function getTimeDiffInMinutes(timestamp1, timestamp2)
+{
+    const diffMilliseconds = timestamp2 - timestamp1;
+    return diffMilliseconds / (1000 * 60);
+}
+
+async function loadRecommendation(user_id){
+    try {
+        response = await fetch(`${BASE_URL}${RECOMMENDATION_URL}?user_id=${user_id}&limit=${RECOMMENDATION_LIMIT}`, {
+            method: 'GET',
+            headers: {
+            'Content-Type': 'application/json',
+            }
+        })
+        console.log(`Got recommendations Status-Code ${response.status}`)
+        if(response.status == 200)
+        {
+            const data = await response.json()
+            console.log(data)
+            const eLeetRecommendation = {
+                updatedTs : Date.now(),
+                recommendation: data
+            }
+            chrome.storage.local.set({
+                eLeetRecommendation : eLeetRecommendation
+            })
+            return {
+                data : data,
+                status : true
+            }
+        }else {
+            return {
+                status : false,
+                error : "Failed to fetch data"
+            }
+        }
+
+    } catch (error) {
+        console.log("Error Fecting recommendations")
+        console.log(error)
+        return {
+            status : false,
+            error : error
+        }
+    }
+}
+function getRecommendation(message , sendResponse)
+{
+    const user_id = message.user_id
+    const refresh = message.refresh
+    if(refresh)
+    {
+        loadRecommendation(user_id)
+        .then(data => {
+            // Save the recommenaditon to storage
+            sendResponse({...data})
+        })
+        .catch(error => {
+            console.log("Error fetching the recommendation")
+            console.log(error)
+            sendResponse({
+                status : false,
+                error : "Unable to fetch the recommendations at the moment"
+            })
+        })
+    }else {
+        // LoadRecommendation from storage
+        chrome.storage.local.get(['eLeetRecommendation'], function(result){
+            console.log("Fecting recommendation from the storage")
+            console.log(result.eLeetRecommendation)
+            let shouldReload = false
+            if(result.eLeetRecommendation)
+            {
+                shouldReload = getTimeDiffInMinutes(result.eLeetRecommendation.updatedTs, Date.now()) > SESSION_LENGTH
+            }
+
+            if (!shouldReload)
+            {
+                sendResponse({
+                    status : true,
+                    data : result.eLeetRecommendation.recommendation
+                })
+            }
+            else{
+                loadRecommendation(user_id)
+                .then(data => {
+                    // Save the recommenaditon to storage
+                    sendResponse({...data})
+                })
+                .catch(error => {
+                    console.log("Error fetching the recommendation")
+                    console.log(error)
+                    sendResponse({
+                        status : false,
+                        error : "Unable to fetch the recommendations at the moment"
+                    })
+                })
+            }
+        })
+    }
+}
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log(message)
     if(message.type == "create_new_tab"){
@@ -15,6 +120,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             active: true  
         });
         sendResponse({ status: "Chrome tab successfully created" });
+    }
+    else if(message.type === "GET_RECOMMENDATION")
+    {
+        getRecommendation(message , sendResponse)   
     }
     else if(message.type == "problem_log"){
         chrome.storage.local.get(['user_id'],function(result) {
@@ -70,24 +179,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 
 
-async function loadRecommendation(username){
-    try {
-        response = await fetch(`${BASE_URL}${RECOMMENDATION_URL}?username=${username}`, {
-            method: 'GET',
-            headers: {
-            'Content-Type': 'application/json',
-            }
-        })
-        console.log(`Got recommendations Status-Code ${response.status}`)
-        const data = await response.json()
-        console.log(data)
-        return data
-    } catch (error) {
-        console.log("Error Fecting recommendations")
-        console.log(error)
-    }
-    return undefined;
-}
+
 
 async function getUserData()
 {
