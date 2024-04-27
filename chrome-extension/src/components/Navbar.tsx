@@ -13,7 +13,7 @@ function Navbar() {
     window.close();
   }
   return (
-    <AppBar sx={{backgroundColor: 'white', boxShadow:"inherit"}} style={{ width: '100%' }} position="fixed">
+    <AppBar sx={{backgroundColor: 'white', boxShadow:"inherit"}} style={{ width: '100%' , zIndex:10}} position="fixed">
       <Container maxWidth="xl" style={{ maxWidth: '100%' }}>
         <Toolbar disableGutters>
             <IconButton sx={{ "&.Mui-selected": { outline: 'none' }, "&:focus": { outline: 'none' } }}>

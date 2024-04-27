@@ -36,17 +36,14 @@ def populate_user_info():
     user_data = request.get_json()
     new_user = request.args.get('newuser')
     user_info = UserInfo(**user_data)
-    
-    if new_user: 
-        return create_user_info(user_info, 1)
-    else:
-        return update_user_info(user_info, 1)
+    print('new_user', new_user)
+    return update_user_info(user_info, 1)
 
 @user_bp.route('/problemLog', methods=['POST'])
 def problem_log():
-    user_name = request.args.get('username')
+    user_id = request.args.get('user_id')
     history_data = request.get_json()
     print(history_data)
-    print(user_name)
+    print(user_id)
     history = History(**history_data)
-    return update_problem_log(user_name, history, 1)
+    return update_problem_log(user_id, history, 1)

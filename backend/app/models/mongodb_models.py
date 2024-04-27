@@ -54,7 +54,7 @@ class Skills(EmbeddedDocument):
 class UserInfo(Document):
     userId = fields.StringField(required=True, unique=True)
     username = fields.StringField(required=True)
-    emailId = fields.EmailField(required=True)
+    emailId = fields.EmailField(required=False)
     rank = fields.IntField(required=True)
     streak = fields.IntField(required=True)
     languages = fields.ListField(fields.EmbeddedDocumentField(Language))

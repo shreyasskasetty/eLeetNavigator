@@ -1,9 +1,26 @@
-import { Card, CardActionArea, Typography, Grid, Box } from '@mui/material';
+import { Card, CardActionArea, Typography, Grid, Box, Button } from '@mui/material';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useEffect, useState } from 'react';
 // import axios from 'axios';
 import Alert from '@mui/material/Alert';
 import { formatProblemString } from '../utility';
+const redirectToNewPage = async (url: string): Promise<void> => {
+  // Fetch the current active tab
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+
+  if (tabs.length === 0) {
+    console.error('No active tab found.');
+    return;
+  }
+
+  const currentTab = tabs[0];
+  if (currentTab.id === undefined) {
+    console.error('The current tab ID is undefined.');
+    return;
+  }
+
+  await chrome.tabs.update(currentTab.id, { url: url });
+};
 
 function Recommendations() {
   const [recommendations, setRecommendations] = useState<{ list: string[]; title: string; }[]>([]);
@@ -80,6 +97,9 @@ function Recommendations() {
     return(
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <Alert severity="warning">{message}</Alert>
+        <Button className="click-me" onClick={()=>redirectToNewPage("https://leetcode.com/shreyas30kasetty/")}>
+          Scan Me
+        </Button>
       </Box>
     )
   }

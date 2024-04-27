@@ -62,12 +62,14 @@ def get_user_info_exists(userId: str)-> tuple[bool,UserInfo]:
 def create_user_info(userInfo: UserInfo, retry: int):
     exists, user = check_user_exists(userInfo.userId)
     if not exists:
+        print("Username doesn't exist in the records. Register at the dashboard.")
         response = {"message" : "Username doesn't exist in the records. Register at the dashboard."}
         return jsonify(response), 400
     
 
     exists, _ = get_user_info_exists(userInfo.userId)
     if exists:
+        print('User_info already exists')
         response = {"message" : "User_info already exists"}
         return jsonify(response), 400
 
@@ -80,6 +82,7 @@ def create_user_info(userInfo: UserInfo, retry: int):
         response = {"message" : "Added Successfully"}
         return jsonify(response) , 200
     except Exception as e:
+        print(e)
         if retry > RETRY_LIMIT:
             response = {"message" : "Failed to add"}
             return jsonify(response) , 400
@@ -90,7 +93,7 @@ def update_user_info(updatedUserInfo: UserInfo, retry : int):
     exists, user_info = get_user_info_exists(updatedUserInfo.userId)
 
     if not exists:
-        return create_user_info(updatedUserInfo)
+        return create_user_info(updatedUserInfo, retry)
     
     exists, user = check_user_exists(updatedUserInfo.userId)
 
@@ -115,8 +118,8 @@ def update_user_info(updatedUserInfo: UserInfo, retry : int):
         else:
             return update_user_info(updatedUserInfo, retry + 1)  
 
-def update_problem_log(userName:str, history:History, retry:int):
-    if not userName:
+def update_problem_log(userId:str, history:History, retry:int):
+    if not userId:
         response = {"message" : "User name can't be empty."}
         return jsonify(response), 404
     
@@ -124,7 +127,7 @@ def update_problem_log(userName:str, history:History, retry:int):
         response = {"message" : "Invalid history payload."}
         return jsonify(response), 404
     
-    exists, user_info = get_user_info_exists(userName)
+    exists, user_info = get_user_info_exists(userId)
 
     if not exists:
         response = {"message" : "User doesn't exist in the system."}
@@ -151,5 +154,5 @@ def update_problem_log(userName:str, history:History, retry:int):
             response = {"message" : "Update Failed"}
             return jsonify(response), 400
         else:
-            return update_problem_log(userName, history, retry + 1)
+            return update_problem_log(userId, history, retry + 1)
         

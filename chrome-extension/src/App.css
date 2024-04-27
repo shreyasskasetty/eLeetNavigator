@@ -7,6 +7,15 @@
   height: 600px;
 }
 
+.click-me{
+  align-self: center;
+}
+
+.container-recommendations{
+  display: flex;
+  flex: 1;
+  align-items: 'center';
+}
 .welcome-page-container{
   width: 350px;
   display: flex;

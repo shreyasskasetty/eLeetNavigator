@@ -11,7 +11,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/@me',methods=['GET'])
 def get_current_user():
     user_id = session.get("user_id")
-    user_name = session.get("user_name")
+    user_name = session.get("username")
     new_user = session.get("new_user")
     user_info_exists = session.get("user_info_exists")
 
@@ -19,10 +19,10 @@ def get_current_user():
         return jsonify({'error': 'Unauthorized'}), 401
     
     return jsonify({
-        "userId": user_id,
+        "user_id": user_id,
         "new_user" : new_user,
         "user_info_exists" : user_info_exists,
-        "user_name" : user_name
+        "username" : user_name
     })
 
 def token_required(f):
@@ -94,7 +94,7 @@ def addUserName():
     userId = data['body']['userId']
     userName = data['body']['userName']
     status = update_user_name(userId, userName)
-
+    session['username'] = userName
     if status:
         return jsonify({'message': 'Successfully Updated'}), 200
     else:

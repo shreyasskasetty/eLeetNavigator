@@ -11,11 +11,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-      const headers: any= {
-        Cookie: 'session=eyJ1c2VyX2lkIjoiMTE1Nzk3NTMxMjUwOTUyNzkyMDIyIn0.ZiBPoA.TrLHo1iHmfidzVJmBaiiTaK3ADM'
-      }
       setIsLoading(true);
-      api.getCurrentUser(headers).then((res)=>{
+      api.getCurrentUser().then((res)=>{
         console.log(res);
         setIsLoading(false);
         setIsLoggedIn(true);
