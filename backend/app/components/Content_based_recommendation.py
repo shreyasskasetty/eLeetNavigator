@@ -38,6 +38,8 @@ class ContentBased(RecommendationService):
     
         solved_problems = [prob for prob in user_info.history if 
                            any(log.accepted for log in prob.problem_log)]
+        if not solved_problems:
+            return None
         most_recent_history = max(solved_problems, key=lambda x: x.last_update)
         print("Most recent problem", most_recent_history.problem_id)
         return most_recent_history.problem_id
@@ -45,6 +47,8 @@ class ContentBased(RecommendationService):
 
     def get_recommendation(self, user_info: str, limit=10)->Recommendation:
         latest_prob_id = self.get_latest_prob_id(user_info)
+        if not latest_prob_id:
+            return None
         recom_list = self.get_nlargest(latest_prob_id, user_info, limit)
         if not recom_list:
             return None

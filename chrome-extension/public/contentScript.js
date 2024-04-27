@@ -185,7 +185,8 @@ function extractData() {
             "language": "Python",
             "timestamp": "2024-04-07T14:48:00.000Z",
             "time_beats": 75.4,
-            "memory_beats": 60.2
+            "memory_beats": 60.2,
+            "accepted" : true
         }
     ]
     }));

@@ -82,7 +82,12 @@ function Recommendations({currentUser} : any) {
     {
       setMessage("Please login for recommendations")
       return;
-    } 
+    }
+    if (!currentUser.user_info_exists)
+    {
+      setMessage("Onboard onto the system")
+      return;
+    }
     const queryParams = {
       "user_id" : currentUser.user_id,
       "limit" : AppConfig.RECOMMENDATION_LIMIT
@@ -132,9 +137,12 @@ function Recommendations({currentUser} : any) {
     return(
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
         <Alert severity="warning">{message}</Alert>
-        <Button className="click-me" onClick={()=>redirectToNewPage("https://leetcode.com/shreyas30kasetty/")}>
-          Scan Me
-        </Button>
+        {
+          !currentUser.user_info_exists && 
+          <Button className="click-me" onClick={()=>redirectToNewPage(`https://leetcode.com/${currentUser.username}/`)}>
+            Click Here
+          </Button>
+        }
       </Box>
     )
   }

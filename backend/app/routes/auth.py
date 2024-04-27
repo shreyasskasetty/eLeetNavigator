@@ -93,8 +93,8 @@ def addUserName():
     userId = data['body']['userId']
     userName = data['body']['userName']
     status = update_user_name(userId, userName)
-    session['username'] = userName
     if status:
+        session['username'] = userName
         return jsonify({'message': 'Successfully Updated'}), 200
     else:
         return jsonify({'message': 'Update failed'}), 400

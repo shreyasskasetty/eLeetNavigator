@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template,request
+from flask import Blueprint, render_template,request, session
 from flask_cors import cross_origin
 
 # Import any necessary services or models
@@ -38,8 +38,10 @@ def populate_user_info():
     user_data = request.get_json()
     new_user = request.args.get('newuser')
     user_info = UserInfo(**user_data)
-    print('new_user', new_user)
-    return update_user_info(user_info, 1)
+    message, code = update_user_info(user_info, 1)
+    if code == 200:
+        session['user_info_exists'] = True
+    return message, code
 
 @user_bp.route('/problemLog', methods=['POST'])
 def problem_log():
