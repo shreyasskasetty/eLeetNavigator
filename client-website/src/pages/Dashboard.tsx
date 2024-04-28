@@ -3,9 +3,12 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux"
 import { setRecommendation } from "../features/user/userSlice";
 import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, display } from "@mui/system";
 
-const SESSION_LIMIT = 2
+const SESSION_LIMIT = 20
+const BASE_URL = 'http://localhost:3000/'
+const RECOMMENDATION_URL = 'user/decorRecommendation'
+
 
 function getTimeDiffInMinutes(timestamp1 : any, timestamp2 : any)
 {
@@ -16,7 +19,7 @@ function getTimeDiffInMinutes(timestamp1 : any, timestamp2 : any)
 
 const styles = {
   root: {
-    width: '100%',
+    width: '80%',
     overflowX: 'auto',
   },
   table: {
@@ -29,7 +32,42 @@ function Dashboard() {
   const recommendation = useSelector((state: any) => state.user.recommendation); 
   const userInfo =  useSelector((state: any) => state.user.userInfo); 
 
-  function getRecommendation()
+
+  async function loadRecommendation(user_id : any){
+    try {
+          const response = await fetch(`${BASE_URL}${RECOMMENDATION_URL}?user_id=${user_id}`, {
+              method: 'GET',
+              headers: {
+              'Content-Type': 'application/json',
+              }
+          })
+          console.log(`Got recommendations Status-Code ${response.status}`)
+          if(response.status == 200)
+          {
+              const data = await response.json()
+              console.log(data)
+              return {
+                  data : data,
+                  status : true
+              }
+          }else {
+              return {
+                  status : false,
+                  error : "Failed to fetch data"
+              }
+          }
+
+      } catch (error) {
+          console.log("Error Fecting recommendations")
+          console.log(error)
+          return {
+              status : false,
+              error : error
+          }
+      }
+  }
+
+  async function getRecommendation()
   {
     const user_id = userInfo.user_id
     console.log(user_id)
@@ -53,10 +91,18 @@ function Dashboard() {
         ]
       }
     ]
-    dispatch(setRecommendation({
-      updateTs: Date.now(),
-      data : data
-    }))
+    try {
+      const response = await loadRecommendation(user_id)
+      if(response.status){
+        dispatch(setRecommendation({
+          updateTs: Date.now(),
+          data : response.data
+        }))
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   useEffect(()=>{
@@ -78,7 +124,12 @@ function Dashboard() {
   }
 
 return (
-  <>
+  <Box sx={{
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center'
+  }}>
     {
     recommendation?.data.map((group : any, groupIndex : any)=>(
       <Box key={groupIndex}>
@@ -96,15 +147,14 @@ return (
         {group.title}
         </Typography>
         <div >
-        <Paper style={styles.root}>
+        <Paper style={styles.root} >
           <Table style={styles.table}>
             <TableHead>
               <TableRow>
-                <TableCell>Dessert (100g serving)</TableCell>
-                <TableCell align="right">Calories</TableCell>
-                <TableCell align="right">Fat (g)</TableCell>
-                <TableCell align="right">Carbs (g)</TableCell>
-                <TableCell align="right">Protein (g)</TableCell>
+                <TableCell>Problem</TableCell>
+                <TableCell align="right">Difficulty</TableCell>
+                <TableCell align="right">Accepatance Rate</TableCell>
+                <TableCell align="right">Submissions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -114,6 +164,8 @@ return (
                     {problem.problemId}
                   </TableCell>
                   <TableCell align="right">{problem.difficultyLevel}</TableCell>
+                  <TableCell align="right">{problem.acceptanceRate}</TableCell>
+                  <TableCell align="right">{problem.submissions}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -123,7 +175,7 @@ return (
       </Box>
     ))
   }
-  </>
+  </Box>
 
 )
 

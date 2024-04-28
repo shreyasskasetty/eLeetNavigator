@@ -19,3 +19,23 @@ def get_recommendation(userId: str, limit):
             results.append(recom.getDict())
 
     return results, 200
+
+
+def get_decor_recommendation(user_id: str, limit):
+    results, statusCode = get_recommendation(user_id, limit)
+    if statusCode != 200:
+        print("Unable to get recommendations")
+        return "Unable to get recommendations", 500
+
+    results_list = []
+    decor = current_app.config["prob_decor"]
+    for result in results:
+        row = {}
+        row['title'] = result['title']
+        row['problems'] = []
+        for prob in result['list']:
+            probRow = decor.getProblemInfo(prob)
+            row['problems'].append(probRow)
+        results_list.append(row)
+    
+    return results_list, 200

@@ -4,7 +4,7 @@ from flask_cors import cross_origin
 # Import any necessary services or models
 from app.services.user_info_service import create_user_info, update_problem_log, update_user_info
 from app.models.mongodb_models import UserInfo, History
-from app.services.recommedation_service import get_recommendation
+from app.services.recommedation_service import get_recommendation, get_decor_recommendation
 
 
 
@@ -26,6 +26,18 @@ def recommendations():
     else:
         limit = int(limit)
     return get_recommendation(userId=userId, limit=limit)
+
+
+@user_bp.route('/decorRecommendation', methods=['GET'])
+@cross_origin()
+def decorRecommendation():
+    userId = request.args.get('user_id')
+    limit = request.args.get('limit')
+    if not limit:
+        limit = 10
+    else:
+        limit = int(limit)
+    return get_decor_recommendation(user_id=userId, limit=limit)
 
 @user_bp.route('/dashboard')
 def dashboard():

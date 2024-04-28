@@ -11,6 +11,7 @@ from app.routes.user import user_bp
 from app.components.Content_based_recommendation import ContentBased
 from app.components.Recommendation_based_on_last_5 import BasedOnLastNProblems
 from app.components.Recommendation_based_on_difficulty import DifficultyBasedRecommendation
+from app.components.Problem_decorator import ProblemDecorator
 from app.models.mongodb_models import db, User
 from flask import current_app
 from flask_cors import CORS
@@ -39,6 +40,7 @@ def create_app(config_class=DevelopmentConfig):
     @app.before_request
     def load_recommendation_list():
         current_app.config['recom_list'] = [ContentBased(), BasedOnLastNProblems(), DifficultyBasedRecommendation()]
+        current_app.config['prob_decor'] = ProblemDecorator()
 
     @login_manager.user_loader
     def load_user(user_id):
