@@ -3,7 +3,7 @@ from google.oauth2 import id_token
 from google.auth.transport import requests
 from flask import current_app
 from functools import wraps
-from app.services.user_info_service import check_user_exists, create_user, update_user_name, get_user_info_exists
+from app.services.user_info_service import check_user_exists, create_user, update_username, get_user_info_exists
 
 # Create a Blueprint for authentication
 auth_bp = Blueprint('auth', __name__)
@@ -11,7 +11,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/@me',methods=['GET'])
 def get_current_user():
     user_id = session.get("user_id")
-    user_name = session.get("user_name")
+    username = session.get("username")
     new_user = session.get("new_user")
     user_info_exists = session.get("user_info_exists")
 
@@ -22,7 +22,7 @@ def get_current_user():
         "user_id": user_id,
         "new_user" : new_user,
         "user_info_exists" : user_info_exists,
-        "user_name" : user_name
+        "username" : username
     })
 
 def token_required(f):
@@ -43,14 +43,14 @@ def token_required(f):
                 session['new_user'] = False
                 user_info_exists = user.userInfoUpdatedTs is None
                 session['user_info_exists'] = user_info_exists
-                session['user_name'] = user.userName
+                session['username'] = user.username
             else:
-                userId = idinfo['sub']
+                user_id = idinfo['sub']
                 emailId = idinfo['email']
                 name = idinfo['name']
                 imageUrl = idinfo['picture']
-                status, _ = create_user(userId, emailId, name, imageUrl)
-                print(userId)
+                status, _ = create_user(user_id, emailId, name, imageUrl)
+                print(user_id)
                 if not status:
                     return ({'error': 'Unable to create user'}), 400
                 
@@ -66,6 +66,7 @@ def token_required(f):
         except IndexError:
             return jsonify({'error': 'Token structure is wrong'}), 400
         except Exception as e:
+            print(e)
             return jsonify({'error': 'Error processing token', 'details': str(e)}), 500
         return f(*args, **kwargs)
     return decorated_function
@@ -74,7 +75,8 @@ def token_required(f):
 @token_required
 def login():
     return jsonify({'status': 'success', 
-                    'userId': session.get('user_id'),
+                    'user_id': session.get('user_id'),
+                    'user_info_exists': session.get('user_info_exists'),
                     'new_user': session.get('new_user')}), 200
 
 
@@ -90,11 +92,12 @@ def addUserName():
     if not data['body']:
         return jsonify({'message': 'Request does not have body'}), 400
 
-    userId = data['body']['userId']
-    userName = data['body']['userName']
-    status = update_user_name(userId, userName)
+    print(data)
+    user_id = data['body']['user_id']
+    username = data['body']['username']
+    status = update_username(user_id, username)
     if status:
-        session['user_name'] = userName
+        session['username'] = username
         return jsonify({'message': 'Successfully Updated'}), 200
     else:
         return jsonify({'message': 'Update failed'}), 400

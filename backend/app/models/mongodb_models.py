@@ -5,7 +5,7 @@ from mongoengine import Document, EmbeddedDocument, fields
 db = MongoEngine()
 
 class User(db.Document):
-    userName = db.StringField(required=False, unique=True)
+    username = db.StringField(required=False, unique=True)
     emailId = db.StringField(required=True, unique=True)
     userId = db.StringField(required=True, unique=True)
     imageUrl = db.StringField(required=False)

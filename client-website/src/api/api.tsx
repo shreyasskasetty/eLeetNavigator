@@ -10,7 +10,8 @@ const instance = axios.create({
 const api = {
     login: (headers: any) => instance.get('auth/login',{headers}),
     getCurrentUser: ()=> instance.get('/auth/@me'),
-    addUserName: (body: any) =>instance.post('/auth/addUserName', {body})
+    addUserName: (body: any) =>instance.post('/auth/addUserName', {body}),
+    logout: ()=> instance.get('/auth/logout')
 };
 
 export default api;

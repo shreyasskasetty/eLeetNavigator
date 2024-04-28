@@ -5,7 +5,7 @@ import traceback
 
 RETRY_LIMIT = 3
 
-def create_user(userId: str, emailId: str, name: str='', imageUrl: str='', userName: str='')->tuple[bool, User]:
+def create_user(userId: str, emailId: str, name: str='', imageUrl: str='', username: str='')->tuple[bool, User]:
     if not userId or not emailId:  # Ensuring required fields are not empty
         return False, None
     newUser = User()
@@ -13,8 +13,8 @@ def create_user(userId: str, emailId: str, name: str='', imageUrl: str='', userN
     newUser.userId = userId
     newUser.name = name
     newUser.imageUrl = imageUrl
-    if userName:
-        newUser.userName = userName
+    if username:
+        newUser.username = username
     
     try:
         new_user_info = newUser.save()
@@ -33,14 +33,14 @@ def check_user_exists(userId: str) -> tuple[bool, User]:
 
     return True, user
 
-def update_user_name(userId: str, userName: str) -> bool:
+def update_username(userId: str, username: str) -> bool:
     exists, user = check_user_exists(userId)
 
     if not exists:
         print('User does not exist')
         return False
     
-    user.userName = userName
+    user.username = username
 
     try:
         user.save()
@@ -62,8 +62,8 @@ def get_user_info_exists(userId: str)-> tuple[bool,UserInfo]:
 def create_user_info(userInfo: UserInfo, retry: int):
     exists, user = check_user_exists(userInfo.userId)
     if not exists:
-        print("Username doesn't exist in the records. Register at the dashboard.")
-        response = {"message" : "Username doesn't exist in the records. Register at the dashboard."}
+        print("username doesn't exist in the records. Register at the dashboard.")
+        response = {"message" : "username doesn't exist in the records. Register at the dashboard."}
         return jsonify(response), 400
     
 

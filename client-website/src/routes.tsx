@@ -1,18 +1,25 @@
 import {
+  Navigate,
   createBrowserRouter,
 } from "react-router-dom";
-import LoginPage from './pages/LoginPage';
+import Welcome from './pages/Welcome';
 import Dashboard from "./pages/Dashboard";
 import PrivateRoute from "./pages/PrivateRoute";
+import UsernameForm from "./pages/UsernameForm";
 
-export const router = createBrowserRouter([
+export const router = createBrowserRouter(
+    [
         {
           path: "/",
-          element: <LoginPage/>
+          element: <Welcome/>
         },
         {
           path: "/dashboard",
-          element: <PrivateRoute><Dashboard/></PrivateRoute>
+          element: <PrivateRoute> <Dashboard/> </PrivateRoute>
+        },
+        {
+          path: "/username",
+          element: <UsernameForm />
         }
-        ]
+    ]
 );
