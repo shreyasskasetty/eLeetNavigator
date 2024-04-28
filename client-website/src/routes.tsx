@@ -19,7 +19,7 @@ export const router = createBrowserRouter(
         },
         {
           path: "/username",
-          element: <UsernameForm />
+          element: <PrivateRoute> <UsernameForm /> </PrivateRoute>
         }
     ]
 );

@@ -37,7 +37,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     response_data['problem_log'] = [problem_log]
     console.log(response_data);
     (async () => {
-      const response = await chrome.runtime.sendMessage({type: "problem_log",response_data});
+      const response = await chrome.runtime.sendMessage({type: "PROBLEM_LOG",response_data});
       // do something with response here, not outside the function
       console.log(response);
     })();
@@ -69,7 +69,7 @@ function executeWithDelay(delay) {
   setTimeout(function() {
       var userInfo = extractData();
       console.log(userInfo);
-      chrome.runtime.sendMessage(userInfo);
+      chrome.runtime.sendMessage({type: "USER_INFO", userInfo});
   }, delay);
 }
 

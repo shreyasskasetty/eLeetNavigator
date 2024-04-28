@@ -84,6 +84,8 @@ function getRecommendation(message , sendResponse)
             if(result.eLeetRecommendation)
             {
                 shouldReload = getTimeDiffInMinutes(result.eLeetRecommendation.updatedTs, Date.now()) > SESSION_LENGTH
+            }else{
+                shouldReload = true
             }
 
             if (!shouldReload)
@@ -125,7 +127,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     {
         getRecommendation(message , sendResponse)   
     }
-    else if(message.type == "problem_log"){
+    else if(message.type == "PROBLEM_LOG"){
         chrome.storage.local.get(['user_id'],function(result) {
             console.log(result.user_id)
             fetch(`${BASE_URL}${PROBLEM_LOG_URL}?user_id=${result.user_id}`, {
@@ -148,17 +150,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 sendResponse({ status: "Data sent to backend" });
             },1000);
         });
-    }else{
+    }else if(message.type == "USER_INFO"){
+
          // Assuming `message` is the data you want to send to your backend
          chrome.storage.local.get(['user_id'],function(result){
             message.userId = result.user_id;
+            console.log("GET USER INFO")
             console.log(message)
             fetch(`${BASE_URL}${USER_INFO_URL}`, {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(message),
+                body: JSON.stringify(message.userInfo),
             })
             .then(response => {
                     console.log(response);
