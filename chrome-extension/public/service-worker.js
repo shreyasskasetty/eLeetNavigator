@@ -154,7 +154,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
          // Assuming `message` is the data you want to send to your backend
          chrome.storage.local.get(['user_id'],function(result){
-            message.userId = result.user_id;
+            message.userInfo.userId = result.user_id;
             console.log("GET USER INFO")
             console.log(message)
             fetch(`${BASE_URL}${USER_INFO_URL}`, {
