@@ -1,9 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, isAction } from '@reduxjs/toolkit';
 
 const initialState = {
     isAuthenticated: false,
     isSignedIn: false,
     userInfo: null,
+    recommendation: {}
 };
 
 export const userSlice = createSlice({
@@ -20,6 +21,14 @@ export const userSlice = createSlice({
     setIsAuthenticated: (state, action) => {
       state.isAuthenticated = action.payload
     },
+    setRecommendation: (state, action)=>{
+      console.log(state)
+      return {
+        ...state,
+        recommendation : action.payload
+      }
+      
+    },
     setUserInfo: (state, action)=>{
       console.log("dispatched action setUserINfo")
       return {
@@ -31,6 +40,6 @@ export const userSlice = createSlice({
 });
 
 
-export const { setUserInfo, setIsAuthenticated, setSignedIn } = userSlice.actions;
+export const { setUserInfo, setIsAuthenticated, setSignedIn, setRecommendation } = userSlice.actions;
 
 export default userSlice.reducer;
