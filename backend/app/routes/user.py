@@ -48,7 +48,6 @@ def dashboard():
 @user_bp.route('/userInfo' , methods=['POST'])
 def populate_user_info():
     user_data = request.get_json()
-    new_user = request.args.get('newuser')
     user_info = UserInfo(**user_data)
     message, code = update_user_info(user_info, 1)
     if code == 200:

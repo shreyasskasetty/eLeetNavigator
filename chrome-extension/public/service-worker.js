@@ -153,37 +153,43 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }else if(message.type == "USER_INFO"){
 
          // Assuming `message` is the data you want to send to your backend
-         chrome.storage.local.get(['user_id'],function(result){
-            message.userInfo.userId = result.user_id;
-            console.log("GET USER INFO")
-            console.log(message)
-            fetch(`${BASE_URL}${USER_INFO_URL}`, {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(message.userInfo),
-            })
-            .then(response => {
-                    console.log(response);
-                    return response.json();
-                }
-            )
-            .then(data => console.log('Success:', data))
-            .catch((error) => console.error('Error:', error));
-            // console.log(message)
-            // Optionally, you can use sendResponse to send data back to the content script
-            setTimeout(function() {
-                sendResponse({ status: "Data sent to backend" });
-            },1000);
+         chrome.storage.local.get(['user_id', 'username'],function(result){
+
+            if(result.username !== message.userInfo.username)
+            {
+                console.log('Unauthorized user name')
+                sendResponse({ status: "Unauthorized user name" });
+            }
+            else{
+                message.userInfo.userId = result.user_id;
+                console.log("GET USER INFO")
+                console.log(message)
+                fetch(`${BASE_URL}${USER_INFO_URL}`, {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(message.userInfo),
+                })
+                .then(response => {
+                        console.log(response);
+                        return response.json();
+                    }
+                )
+                .then(data => {
+                    console.log('Success:', data)
+                    sendResponse({ status: "Data sent to backend" });
+                    
+                })
+                .catch((error) => {
+                    console.error('Error:', error)
+                    sendResponse({ status: "Failed to send the data" });
+                });
+            }
          })
     }
     return true;
 });
-
-
-
-
 
 async function getUserData()
 {
@@ -195,9 +201,14 @@ async function getUserData()
             }
         })
         console.log(`Response Status(user/@me): ${response.status}`)
-        const data = await response.json()
-        console.log('user session data:',data)
-        return data
+        if(response.status === 200)
+        {
+            const data = await response.json()
+            console.log('user session data:',data)
+            return data
+        }else {
+            return null
+        }
     } catch (error) {
         console.log("Error fetching user session details")
         console.log(error)
@@ -208,6 +219,24 @@ async function getUserData()
 let debounceTimer;
 let dataDebounceTimer;
 
+async function sendProblemLog(problemLog){
+    data = await getUserData();
+    fetch(`${BASE_URL}${PROBLEM_LOG_URL}?user_id=${data.user_id}`, {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(problemLog),
+    })
+    .then(response => {
+            console.log(response);
+            return response.json();
+        }
+    )
+    .then(data => console.log('Success:', data))
+    .catch((error) => console.error('Error:', error));
+}
+
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     // Check if the URL has changed
     clearTimeout(dataDebounceTimer);    
@@ -217,14 +246,25 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         tab.url.endsWith("/")) {
         dataDebounceTimer = setTimeout(async () => {
             const response = await chrome.tabs.sendMessage(tab.id, {type:"GET_PROBLEM_DATA",greeting: "hello", url:`${tab.url}`});
+            console.log("Get problem data")
+            console.log(response)
+            sendProblemLog(response)
         },2000);
     }
     else if(changeInfo.status == "complete" && tab.url && tab.url.includes("https://leetcode.com/u/")){   
-        data = await getUserData();
-        console.log(data);
-        chrome.storage.local.set({'user_id':data.user_id,'username':data.username});
-        dataDebounceTimer = setTimeout(async () => {
-            const response = await chrome.tabs.sendMessage(tab.id, {type:"GET_USER_PROFILE_DATA", url:`${tab.url}${data.username}/`});
-        }, 2000); 
+        try {
+            data = await getUserData();
+            console.log(data);
+            if(data)
+            {    
+                chrome.storage.local.set({'user_id':data.user_id,'username':data.username});
+                dataDebounceTimer = setTimeout(async () => {
+                    const response = await chrome.tabs.sendMessage(tab.id, {type:"GET_USER_PROFILE_DATA", url:`${tab.url}${data.username}/`});
+                }, 2000);
+            }
+
+        } catch (error) {
+            
+        }
     }
 });
