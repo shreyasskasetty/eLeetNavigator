@@ -5,7 +5,7 @@ from flask import current_app
 
 def get_recommendation(userId: str, limit):
     if not userId:
-        return "Invalid UserName", 400
+        return "Invalid UserId", 400
     
     exist, user_info = get_user_info_exists(userId)
     if not exist:

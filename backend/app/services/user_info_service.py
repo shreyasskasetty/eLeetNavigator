@@ -164,4 +164,26 @@ def update_problem_log(userId:str, history:History, retry:int):
             return jsonify(response), 400
         else:
             return update_problem_log(userId, history, retry + 1)
-        
+    
+def get_user_stats(user_id : str):
+    exists, user_info = get_user_info_exists(user_id)
+
+    if not exists:
+        print("username doesn't exist in the records. Register at the dashboard.")
+        response = {"message" : "username doesn't exist in the records. Register at the dashboard."}
+        return jsonify(response), 400
+    
+    user_info.history = None
+    return jsonify(user_info), 200
+
+def get_user_history(user_id : str, limit):
+    exists, user_info = get_user_info_exists(user_id)
+
+    if not exists:
+        print("username doesn't exist in the records. Register at the dashboard.")
+        response = {"message" : "username doesn't exist in the records. Register at the dashboard."}
+        return jsonify(response), 400
+    
+    most_recent_history = sorted(user_info.history, key=lambda x: x.last_update)
+    return_length = min(limit, len(most_recent_history))
+    return jsonify(most_recent_history[:return_length]), 200
