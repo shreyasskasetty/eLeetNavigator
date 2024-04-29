@@ -16,6 +16,7 @@ def check_user_auth(f):
     def decorated_function(*args, **kwargs):
         user_id = session.get("user_id")
         if not user_id:
+            print("User id not present in the session")
             return jsonify({'error': 'Unauthorized'}), 401
         return f(*args, **kwargs)
     return decorated_function
@@ -29,7 +30,6 @@ def profile():
     return render_template('profile.html')  # , user=user_info)
 
 @user_bp.route('/recommendations', methods=['GET'])
-@cross_origin()
 @check_user_auth
 def recommendations():
     userId = request.args.get('user_id')
@@ -42,7 +42,6 @@ def recommendations():
 
 
 @user_bp.route('/decorRecommendation', methods=['GET'])
-@cross_origin()
 @check_user_auth
 def decorRecommendation():
     userId = request.args.get('user_id')
