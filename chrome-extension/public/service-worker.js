@@ -162,12 +162,16 @@ async function fetchRecentsFromBackend(user_id){
         }
     }
 }
+function getRandomInt(max) {
+    return Math.floor(Math.random() * max);
+  }
 
 async function getRecents(message, sendResponse)
 {
     console.log("Starting to get the recents")
     const result = await chrome.storage.local.get(['use_stored_recents'])
-    const useStoredRecents = result.use_stored_recents
+    const useStoredRecents = result.use_stored_recents && getRandomInt(3) != 0
+    console.log(useStoredRecents)
     if(!useStoredRecents)
     {
         const user_id = message.user_id
@@ -225,6 +229,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     else if(message.type == "PROBLEM_LOG"){
         chrome.storage.local.get(['user_id'],function(result) {
+            notify('ELeetNavigator','Problem submission has been logged successfully')
             console.log(result.user_id)
             fetch(`${BASE_URL}${PROBLEM_LOG_URL}?user_id=${result.user_id}`, {
                 method: 'POST',
@@ -345,6 +350,7 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         tab.url.includes("/submissions/") &&
         tab.url.endsWith("/")) {
         dataDebounceTimer = setTimeout(async () => {
+            notify('ELeetNavigator','Problem submission scanning')
             const response = await chrome.tabs.sendMessage(tab.id, {type:"GET_PROBLEM_DATA",greeting: "hello", url:`${tab.url}`});
             sendProblemLog(response)
         },2000);
