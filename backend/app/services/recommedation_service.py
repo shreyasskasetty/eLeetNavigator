@@ -8,10 +8,14 @@ def get_recommendation(userId: str, limit):
         return "Invalid UserId", 400
     
     exist, user_info = get_user_info_exists(userId)
-    if not exist:
-        return "Username doesn't exist in our records", 400
-        
     results = []
+
+    if not exist:
+        recommender = current_app.config['cold_start_recom']
+        recom = recommender.get_recommendation(user_info, limit)
+        results.append(recom.getDict())
+        return results, 200
+        
     recom_list = current_app.config["recom_list"]
     for rl in recom_list:
         recom = rl.get_recommendation(user_info, limit)

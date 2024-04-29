@@ -246,7 +246,7 @@ return (
         {/* Main Content */}
         {recommendation?.data && recommendation?.data.length !== 0 &&  <Box sx={{ flex: 1 }}>
           <Typography variant="h4" sx={{ marginBottom: '20px', marginTop:'10px', color: '#0071A1', fontWeight: 'bold' }}>
-            Your Personalized Recommendations
+            Your Recommendations
           </Typography>
           {recommendation?.data.map((group: any, groupIndex: any) => (
             <Card key={groupIndex} sx={{ marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
