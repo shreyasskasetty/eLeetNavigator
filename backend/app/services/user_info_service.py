@@ -174,7 +174,17 @@ def get_user_stats(user_id : str):
         return jsonify(response), 400
     
     user_info.history = None
-    return jsonify(user_info), 200
+    user_stats = {}
+    user_stats['rank'] = user_info.rank
+    user_stats['total'] = 0
+    for prob in user_info.solved_problems:
+        user_stats['total'] += prob.count
+        user_stats[prob.type] = prob.count 
+    user_stats['easy_total'] = 790
+    user_stats['medium_total'] = 1646
+    user_stats['hard_total'] = 698
+
+    return jsonify(user_stats), 200
 
 def get_user_history(user_id : str, limit):
     exists, user_info = get_user_info_exists(user_id)

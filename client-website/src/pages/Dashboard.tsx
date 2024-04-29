@@ -10,6 +10,7 @@ import { useState } from "react";
 import { IconButton } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import api from "../api/api";
 
 const SESSION_LIMIT = 1
 const BASE_URL = 'http://localhost:3000/'
@@ -34,6 +35,17 @@ function Dashboard() {
   const dispatch = useDispatch()
   const recommendation = useSelector((state: any) => state.user.recommendation); 
   const userInfo =  useSelector((state: any) => state.user.userInfo); 
+  const [userStats, setUserStats] = useState({
+    'loaded' : false,
+    'rank' : "",
+    'total' : 0,
+    'easy' : 0,
+    'easy_total' : 790,
+    'medium' : 0,
+    'medium_total' : 1646,
+    'hard' : 0,
+    'hard_total' : 698
+  })
 
   const [expandedState, setExpandedState] = useState<any>({});
 
@@ -46,16 +58,15 @@ function Dashboard() {
 
   async function loadRecommendation(user_id : any){
     try {
-          const response = await fetch(`${BASE_URL}${RECOMMENDATION_URL}?user_id=${user_id}`, {
-              method: 'GET',
-              headers: {
-              'Content-Type': 'application/json',
-              }
-          })
+          const queryParams = {
+            user_id : user_id
+          }
+          const response = await api.getRecommendation(queryParams)
           console.log(`Got recommendations Status-Code ${response.status}`)
+          console.log(response)
           if(response.status == 200)
           {
-              const data = await response.json()
+              const data = await response.data
               console.log(data)
               return {
                   data : data,
@@ -76,6 +87,40 @@ function Dashboard() {
               error : error
           }
       }
+  }
+
+  async function getUserStats(user_id:string) {
+    try {
+      const queryParams = {
+        user_id : user_id
+      }
+      const response = await api.getUserStats(queryParams)
+      const stats = response.data
+      console.log(stats)
+      let userStats = {
+        'loaded' : true,
+        'rank' : "",
+        'total' : 0,
+        'easy' : 0,
+        'easy_total' : 0,
+        'medium' : 0,
+        'medium_total' : 0,
+        'hard' : 0,
+        'hard_total' : 0
+      }
+      userStats['rank'] = stats.rank
+      userStats['total'] = stats.total
+      userStats['easy'] = stats.easy 
+      userStats['easy_total'] = stats.easy_total 
+      userStats['medium'] = stats.medium 
+      userStats['medium_total'] = stats.medium_total 
+      userStats['hard'] = stats.medium 
+      userStats['hard_total'] = stats.medium_total 
+      console.log(userStats)
+      setUserStats(userStats)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async function getRecommendation()
@@ -108,6 +153,11 @@ function Dashboard() {
     {
       getRecommendation()
     }
+
+    if(!userStats.loaded)
+    {
+      getUserStats(userInfo.user_id)
+    }
   },[])
 
   if(!recommendation.data)
@@ -134,21 +184,28 @@ return (
             User Stats
           </Typography>
           <Box sx={{ mb: 2 }}>
-            <Typography sx={{ mb: 1, fontWeight: 'bold' }}>Problems Solved</Typography>
+            <Typography sx={{ mb: 1, fontWeight: 'bold' }}>Total Solved</Typography>
+            <Typography>{userStats?.total ? userStats.total : 0 }</Typography>
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography sx={{ mb: 1, fontWeight: 'bold' }}>Easy Solved</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <LinearProgress variant="determinate" value={(stats.problemsSolved / stats.totalAttempts) * 100} sx={{ flexGrow: 1, mr: 1, height: 10, borderRadius: 5, backgroundColor: '#eee' }} />
-              <Typography variant="body2">{`${stats.problemsSolved} / ${stats.totalAttempts}`}</Typography>
+              <LinearProgress variant="determinate" value={(userStats.easy / userStats.easy_total) * 100} sx={{ flexGrow: 1, mr: 1, height: 10, borderRadius: 5, backgroundColor: '#eee' }} />
+              <Typography variant="body2">{`${userStats.easy} / ${userStats.easy_total}`}</Typography>
             </Box>
           </Box>
           <Box sx={{ mb: 2 }}>
-            <Typography sx={{ mb: 1, fontWeight: 'bold' }}>Total Attempts</Typography>
-            <Typography>{stats.totalAttempts}</Typography>
+            <Typography sx={{ mb: 1, fontWeight: 'bold' }}>Medium Solved</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <LinearProgress variant="determinate" value={(userStats.medium / userStats.medium_total) * 100} sx={{ flexGrow: 1, mr: 1, height: 10, borderRadius: 5, backgroundColor: '#eee' }} />
+              <Typography variant="body2">{`${userStats.medium} / ${userStats.medium_total}`}</Typography>
+            </Box>
           </Box>
           <Box sx={{ mb: 2 }}>
-            <Typography sx={{ mb: 1, fontWeight: 'bold' }}>Success Rate</Typography>
+            <Typography sx={{ mb: 1, fontWeight: 'bold' }}>Hard Solved</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <LinearProgress variant="determinate" value={stats.successRate} color="primary" sx={{ flexGrow: 1, mr: 1, height: 10, borderRadius: 5, backgroundColor: calculateProgressColor(stats.successRate) }} />
-              <Typography variant="body2">{`${stats.successRate}%`}</Typography>
+              <LinearProgress variant="determinate" value={(userStats.hard / userStats.hard_total) * 100} sx={{ flexGrow: 1, mr: 1, height: 10, borderRadius: 5, backgroundColor: '#eee' }} />
+              <Typography variant="body2">{`${userStats.hard} / ${userStats.hard_total}`}</Typography>
             </Box>
           </Box>
         </CardContent>
