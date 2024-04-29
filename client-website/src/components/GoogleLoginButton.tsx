@@ -3,10 +3,15 @@ import api from '../api/api'
 import { useDispatch } from 'react-redux';
 import { setSignedIn, setUserInfo } from '../features/user/userSlice';
 import { setIsLoading } from '../features/ui/commonSlice';
+import { showAlert } from '../features/ui/notificationSlice';
+import { AppDispatch } from '../store';
+import { useNavigate } from 'react-router-dom';
+import { setOpen } from '../features/ui/modalSlice';
 
 const GoogleLoginButton = () => {
     // const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const dispatch: AppDispatch = useDispatch();
+    const navigate = useNavigate();
     const onSuccess = async (res: any) => {
         console.log(res);
         const headers = {
@@ -24,15 +29,19 @@ const GoogleLoginButton = () => {
                ...response.data
             }))
             dispatch(setIsLoading(true));
+            dispatch(showAlert({ severity: 'success', message: 'Login Successful', duration: 3000 }))
             if(response.data.new_user){
-                window.location.href = "/username"
+                navigate("/username")
             }
             else{
-                window.location.href = "/dashboard"
+                navigate("/dashboard")
             }
+            dispatch(setOpen(false))
         })
         .catch(error => {
+            dispatch(showAlert({ severity: 'error', message: `Login Failed. ${error.message}`, duration: 3000 }))
             console.error('Error during the API call:', error.message);
+            dispatch(setOpen(false))
         })
     }
 

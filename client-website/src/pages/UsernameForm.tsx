@@ -6,6 +6,9 @@ import { useSelector } from 'react-redux';
 import api
  from '../api/api';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../store';
+import { showAlert } from '../features/ui/notificationSlice';
 function UsernameForm() {
   const [username, setUsername] = useState('');
   const navigate = useNavigate();
@@ -13,7 +16,7 @@ function UsernameForm() {
   const handleChange = (event: any) => {
     setUsername(event.target.value);
   };
-
+  const dispatch: AppDispatch = useDispatch();
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     console.log('Username:', username);
@@ -24,8 +27,10 @@ function UsernameForm() {
             if(res.status === 200){
               navigate('/dashboard');
             }
+            dispatch(showAlert({ severity: 'success', message: 'Username submitted successfully', duration: 3000 }));
         }).catch((error: any)=>{
             console.log(error)
+            dispatch(showAlert({ severity: 'success', message: error.message, duration: 3000 }));
         })
 
     } catch (error) {

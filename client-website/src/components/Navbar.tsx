@@ -1,13 +1,17 @@
 import { useSelector } from "react-redux";
 import api from "../api/api";
 import { useDispatch } from "react-redux";
-import { setSignedIn } from "../features/user/userSlice";
+import { setRecommendation, setSignedIn } from "../features/user/userSlice";
 import { setOpen } from "../features/ui/modalSlice";
 import { setIsLoading } from "../features/ui/commonSlice";
+import { AppDispatch } from "../store";
+import { showAlert } from "../features/ui/notificationSlice";
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
   const isSignedIn = useSelector((state: any) => state.user.isSignedIn);
-  const dispatch = useDispatch();
+  const dispatch: AppDispatch= useDispatch();
+  const navigate = useNavigate();
   const handleDashboardClick = () =>{
     window.location.href = "/dashboard"
   }
@@ -19,11 +23,16 @@ function Navbar() {
         if(res.status === 200){
           dispatch(setIsLoading(true));
           dispatch(setSignedIn(false));
+          dispatch(setRecommendation({}));
+          dispatch(showAlert({severity: 'success', message: 'Successfully logged out', duration: 3000}))
+          navigate("/")
         }
         dispatch(setIsLoading(false));
-        window.location.href = "/"
       }).catch((error: any)=>{
+          dispatch(showAlert({severity: 'error', message: `${error.message}`, duration: 3000}))
           console.log(error)
+          dispatch(setSignedIn(false));
+          navigate("/")
       })
     }else{
       dispatch(setOpen(true));

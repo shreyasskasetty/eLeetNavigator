@@ -4,6 +4,7 @@ import modalReducer from '../features/ui/modalSlice'
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; 
 import commonSlice from '../features/ui/commonSlice';
+import notificationSlice from '../features/ui/notificationSlice';
 
 const persistConfig = {
     key: 'root',
@@ -14,7 +15,8 @@ const persistConfig = {
   const rootReducer = combineReducers({
     user: userReducer,
     modal: modalReducer,
-    common: commonSlice
+    common: commonSlice,
+    notification: notificationSlice
     // Add other reducers here
   });
   
