@@ -57,7 +57,7 @@ class BasedOnLastNProblems(RecommendationService):
         if not user_info or len(user_info.history) == 0:
             return None
     
-        most_recent_history = sorted(user_info.history, key=lambda x: x.last_update)
+        most_recent_history = sorted(user_info.history, key=lambda x: x.last_update, reverse=True)
         max_size = min(self.n, len(most_recent_history))
         return [prob.problem_id for prob in most_recent_history[:max_size]]
 

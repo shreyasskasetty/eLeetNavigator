@@ -114,8 +114,8 @@ function Dashboard() {
       userStats['easy_total'] = stats.easy_total 
       userStats['medium'] = stats.medium 
       userStats['medium_total'] = stats.medium_total 
-      userStats['hard'] = stats.medium 
-      userStats['hard_total'] = stats.medium_total 
+      userStats['hard'] = stats.hard 
+      userStats['hard_total'] = stats.hard_total 
       console.log(userStats)
       setUserStats(userStats)
     } catch (error) {

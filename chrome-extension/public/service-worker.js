@@ -6,6 +6,8 @@ const RECOMMENDATION_LIMIT = 3
 const PROBLEM_LOG_URL = 'user/problemLog'
 const USER_INFO_URL = 'user/userInfo'
 const RECOMMENDATION_URL = 'user/recommendations'
+const RECENTS_URL = 'user/userRecent'
+
 const AT_ME_URL = 'auth/@me'
 
 const SESSION_LENGTH = 2
@@ -113,6 +115,86 @@ function getRecommendation(message , sendResponse)
         })
     }
 }
+async function fetchRecentsFromBackend(user_id){
+    try {
+        response = await fetch(`${BASE_URL}${RECENTS_URL}?user_id=${user_id}`, {
+            method: 'GET',
+            headers: {
+            'Content-Type': 'application/json',
+            }
+        })
+        console.log(`Got recents Status-Code ${response.status}`)
+        if(response.status == 200)
+        {
+            const data = await response.json()
+            const recents = {
+                ...data
+            }
+            chrome.storage.local.set({recents : data})
+            chrome.storage.local.set({use_stored_recents : true})
+            return {
+                data : data,
+                status : true
+            }
+        }else {
+            return {
+                status : false,
+                error : "Failed to fetch data"
+            }
+        }
+
+    } catch (error) {
+        console.log("Error Fecting recommendations")
+        console.log(error)
+        return {
+            status : false,
+            error : error
+        }
+    }
+}
+
+async function getRecents(message, sendResponse)
+{
+    console.log("Starting to get the recents")
+    const result = await chrome.storage.local.get(['use_stored_recents'])
+    const useStoredRecents = result.use_stored_recents
+    if(!useStoredRecents)
+    {
+        const user_id = message.user_id
+        fetchRecentsFromBackend(user_id)
+        .then(data => {
+            // Save the recommenaditon to storage
+            sendResponse({...data})
+        })
+        .catch(error => {
+            console.log("Error fetching the recents")
+            console.log(error)
+            sendResponse({
+                status : false,
+                error : "Unable to fetch the recents at the moment"
+            })
+        })
+
+    }else {
+        const recents = await chrome.storage.local.get(['recents'])
+        // const recents = results.recents
+        console.log("Obtaining recents from storage")
+        if(recents)
+        {
+            sendResponse({
+                status : true,
+                data : recents.recents
+            })
+        }else{
+            chrome.storage.local.set({use_stored_recents : false})
+            sendResponse({
+                status : false,
+                error : "Unable to fetch the recents at the moment"
+            })
+        }
+
+    }
+}
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log(message)
     if(message.type == "create_new_tab"){
@@ -126,6 +208,10 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     else if(message.type === "GET_RECOMMENDATION")
     {
         getRecommendation(message , sendResponse)   
+    }
+    else if(message.type === "GET_RECENTS")
+    {
+        getRecents(message, sendResponse)
     }
     else if(message.type == "PROBLEM_LOG"){
         chrome.storage.local.get(['user_id'],function(result) {
@@ -229,6 +315,7 @@ async function sendProblemLog(problemLog){
         body: JSON.stringify(problemLog),
     })
     .then(response => {
+        chrome.storage.local.set({use_stored_recents : false})
             console.log(response);
             return response.json();
         }
@@ -246,8 +333,6 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
         tab.url.endsWith("/")) {
         dataDebounceTimer = setTimeout(async () => {
             const response = await chrome.tabs.sendMessage(tab.id, {type:"GET_PROBLEM_DATA",greeting: "hello", url:`${tab.url}`});
-            console.log("Get problem data")
-            console.log(response)
             sendProblemLog(response)
         },2000);
     }

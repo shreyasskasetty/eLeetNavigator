@@ -8,10 +8,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import PersonIcon from '@mui/icons-material/Person';
 import Paper from '@mui/material/Paper';
 import HomeView from './HomeView';
-
-function RecentView() {
-  return <div>Recent View</div>;
-}
+import RecentView from './RecentView';
 
 function ProfileView() {
   return <div>Profile View</div>;
@@ -26,7 +23,7 @@ export default function BottomNavbar({currentUser}:any) {
       contentView = <HomeView currentUser={currentUser}/>;
       break;
     case 1:
-      contentView = <RecentView />;
+      contentView = <RecentView currentUser={currentUser} />;
       break;
     case 2:
       contentView = <ProfileView />;

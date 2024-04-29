@@ -194,7 +194,7 @@ def get_user_history(user_id : str, limit):
         response = {"message" : "username doesn't exist in the records. Register at the dashboard."}
         return jsonify(response), 400
     
-    most_recent_history = sorted(user_info.history, key=lambda x: x.last_update)
+    most_recent_history = sorted(user_info.history, key=lambda x: x.last_update, reverse=True)
     return_length = min(limit, len(most_recent_history))
     recent_history = []
     for history in most_recent_history[:return_length]:
