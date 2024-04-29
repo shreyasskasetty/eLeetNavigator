@@ -6,6 +6,10 @@ import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, wi
 import { Box, display } from "@mui/system";
 import { toTitleCase, normalizeDashes, convertDifficultyLevelToColor } from "../utility";
 import { blue, green, red } from '@mui/material/colors';
+import { useState } from "react";
+import { IconButton } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 const SESSION_LIMIT = 1
 const BASE_URL = 'http://localhost:3000/'
@@ -25,21 +29,20 @@ const stats = {
   successRate: 50
 };
 
-const styles = {
-  root: {
-    width: '80%',
-    overflowX: 'auto',
-  },
-  table: {
-    minWidth: 700,
-  },
-};
 
 function Dashboard() {
   const dispatch = useDispatch()
   const recommendation = useSelector((state: any) => state.user.recommendation); 
   const userInfo =  useSelector((state: any) => state.user.userInfo); 
 
+  const [expandedState, setExpandedState] = useState<any>({});
+
+  const toggleExpansion = (groupIndex: any) => {
+    setExpandedState((prevState: any) => ({
+      ...prevState,
+      [groupIndex]: !prevState[groupIndex]
+    }));
+  };
 
   async function loadRecommendation(user_id : any){
     try {
@@ -156,7 +159,7 @@ return (
         <Typography variant="h4" sx={{ marginBottom: '20px', color: '#0071A1', fontWeight: 'bold' }}>
           Your Personalized Recommendations
         </Typography>
-        {recommendation?.data.map((group, groupIndex) => (
+        {recommendation?.data.map((group: any, groupIndex: any) => (
           <Card key={groupIndex} sx={{ marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
             <CardContent>
               <Typography variant="h6" sx={{ color: 'black', borderBottom: '1px solid #e0e0e0', padding: '10px 20px', fontWeight: 'bold' }}>
@@ -173,15 +176,14 @@ return (
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {group.problems.map((problem, problemId) => (
+                    {(expandedState[groupIndex] ? group.problems : group.problems.slice(0, 3)).map((problem:any, problemId:any) => (
                       <TableRow key={problemId} sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#efefef' } }} onClick={() => handleRowClick(problem.problemId)}>
                         <TableCell component="th" scope="row">
                           {toTitleCase(problem.problemId)}
                         </TableCell>
-                        <TableCell sx={{
-                            color: convertDifficultyLevelToColor(problem.difficultyLevel),
-                            alignItems: 'center',
-                        }}align="right">{problem.difficultyLevel}</TableCell>
+                        <TableCell align="right" sx={{ color: convertDifficultyLevelToColor(problem.difficultyLevel) }}>
+                          {problem.difficultyLevel}
+                        </TableCell>
                         <TableCell align="right">{problem.acceptanceRate}</TableCell>
                         <TableCell align="right">{problem.submissions}</TableCell>
                       </TableRow>
@@ -189,6 +191,14 @@ return (
                   </TableBody>
                 </Table>
               </Paper>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'initial', mt: 1 }}>
+                <Typography variant="body2">
+                  {expandedState[groupIndex] ? 'Less Problems' : 'More Problems'}
+                </Typography>
+                <IconButton onClick={() => toggleExpansion(groupIndex)} size="large">
+                  {expandedState[groupIndex] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </IconButton>
+              </Box>
             </CardContent>
           </Card>
         ))}
