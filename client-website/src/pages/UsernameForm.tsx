@@ -9,6 +9,9 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store';
 import { showAlert } from '../features/ui/notificationSlice';
+import { setUsername } from '../features/user/userSlice';
+
+const setReduxUsername = setUsername
 function UsernameForm() {
   const [username, setUsername] = useState('');
   const navigate = useNavigate();
@@ -25,6 +28,7 @@ function UsernameForm() {
     try {
         api.addUserName(formData).then((res)=>{
             if(res.status === 200){
+              dispatch(setReduxUsername(formData.username))
               navigate('/dashboard');
             }
             dispatch(showAlert({ severity: 'success', message: 'Username submitted successfully', duration: 3000 }));

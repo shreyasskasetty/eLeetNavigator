@@ -4,7 +4,8 @@ const initialState = {
     isAuthenticated: false,
     isSignedIn: false,
     userInfo: null,
-    recommendation: {}
+    recommendation: {},
+    username : ""
 };
 
 export const userSlice = createSlice({
@@ -27,7 +28,13 @@ export const userSlice = createSlice({
         ...state,
         recommendation : action.payload
       }
-      
+    },
+    setUsername : (state, action)=>{
+      console.log(state)
+      return {
+        ...state,
+        username : action.payload
+      }
     },
     setUserInfo: (state, action)=>{
       console.log("dispatched action setUserINfo")
@@ -40,6 +47,6 @@ export const userSlice = createSlice({
 });
 
 
-export const { setUserInfo, setIsAuthenticated, setSignedIn, setRecommendation } = userSlice.actions;
+export const { setUserInfo, setIsAuthenticated, setSignedIn, setRecommendation , setUsername} = userSlice.actions;
 
 export default userSlice.reducer;

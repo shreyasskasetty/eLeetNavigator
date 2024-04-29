@@ -1,8 +1,8 @@
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux"
-import { setRecommendation } from "../features/user/userSlice";
-import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles, Card,LinearProgress, CardContent } from "@mui/material";
+import { setRecommendation , setUserInfo} from "../features/user/userSlice";
+import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles, Card,LinearProgress, CardContent, Button } from "@mui/material";
 import { Box, display } from "@mui/system";
 import { toTitleCase, normalizeDashes, convertDifficultyLevelToColor } from "../utility";
 import { blue, green, red } from '@mui/material/colors';
@@ -35,6 +35,7 @@ function Dashboard() {
   const dispatch = useDispatch()
   const recommendation = useSelector((state: any) => state.user.recommendation); 
   const userInfo =  useSelector((state: any) => state.user.userInfo); 
+  const username = useSelector((state: any) => state.user.username)
   const [userStats, setUserStats] = useState({
     'loaded' : false,
     'rank' : "",
@@ -138,6 +139,9 @@ function Dashboard() {
 
     } catch (error) {
       console.log(error)
+      dispatch(setRecommendation({
+        data: []
+      }))
     }
   }
 
@@ -145,6 +149,16 @@ function Dashboard() {
     const leet_problem_url = `https://leetcode.com/problems/${normalizeDashes(problemId)}`
     window.open(leet_problem_url, '_blank')
   };
+
+  const handleOnboarding = () => {
+    // Redirect to the new page
+    console.log(userInfo)
+    dispatch(setUserInfo({
+      ...userInfo,
+      user_info_exists : true
+    }))
+    window.open(`https://leetcode.com/${username}`, '_blank'); // Open in a new tab
+};
 
   useEffect(()=>{
     let shouldRefresh = recommendation.data ? false : true
@@ -160,14 +174,6 @@ function Dashboard() {
     }
   },[])
 
-  if(!recommendation.data)
-  {
-    return (
-      <div>
-        No Recommendation at this point
-      </div>
-    )
-  }
 
   const calculateProgressColor = (percentage: any) => {
     if (percentage < 33) return red[500];
@@ -210,56 +216,84 @@ return (
           </Box>
         </CardContent>
       </Card>
+      <Box sx={{ display: 'flex', flexDirection: 'column', minWidth:'60%' , maxWidth: '70%',  ml: '25%', mt: 2  }}>
 
-      {/* Main Content */}
-      <Box sx={{ flex: 1, maxWidth: '60%', ml: '25%', mt: 2 }}>
-        <Typography variant="h4" sx={{ marginBottom: '20px', color: '#0071A1', fontWeight: 'bold' }}>
-          Your Personalized Recommendations
-        </Typography>
-        {recommendation?.data.map((group: any, groupIndex: any) => (
-          <Card key={groupIndex} sx={{ marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ color: 'black', borderBottom: '1px solid #e0e0e0', padding: '10px 20px', fontWeight: 'bold' }}>
-                {group.title}
-              </Typography>
-              <Paper sx={{ marginTop: '10px' }}>
-                <Table>
-                  <TableHead>
-                    <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                      <TableCell sx={{ fontWeight: 'bold' }}>Problem</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>Difficulty</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>Acceptance Rate</TableCell>
-                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>Submissions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {(expandedState[groupIndex] ? group.problems : group.problems.slice(0, 3)).map((problem:any, problemId:any) => (
-                      <TableRow key={problemId} sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#efefef' } }} onClick={() => handleRowClick(problem.problemId)}>
-                        <TableCell component="th" scope="row">
-                          {toTitleCase(problem.problemId)}
-                        </TableCell>
-                        <TableCell align="right" sx={{ color: convertDifficultyLevelToColor(problem.difficultyLevel) }}>
-                          {problem.difficultyLevel}
-                        </TableCell>
-                        <TableCell align="right">{problem.acceptanceRate}</TableCell>
-                        <TableCell align="right">{problem.submissions}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </Paper>
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'initial', mt: 1 }}>
-                <Typography variant="body2">
-                  {expandedState[groupIndex] ? 'Less Problems' : 'More Problems'}
+        {/* <Box sx={{ flex: 1 , flexDirection:'row'}}>
+        <Paper sx={{ marginTop: '10px', justifyContent:'center' }}>
+
+          <Typography variant="h6" sx={{ color: 'black', borderBottom: '1px solid #e0e0e0', padding: '10px 20px', fontWeight: 'bold' }}>
+            Welcome! To get started, please onboard onto the system.
+          </Typography>
+          <Button variant="contained" style={{color:'#ffffff', justifyContent:'center', margin:'10px'}}>
+              Onboard Now
+          </Button>
+        </Paper>
+        </Box> */}
+
+        {!userInfo.user_info_exists && <Box sx={{ flex: 1 , flexDirection:'row'}}>
+          <Paper sx={{ marginTop: '10px', display: 'flex', justifyContent:'center', flexDirection: 'column' }}>
+
+            <Typography variant="h6" sx={{ color: 'black', borderBottom: '1px solid #e0e0e0', padding: '10px 20px', fontWeight: 'bold' }}>
+              Welcome! To get started, please onboard onto the system.
+            </Typography>
+            <Button variant="contained" style={{color:'#ffffff', margin:'10px'}} onClick={handleOnboarding}>
+              Onboard Now
+            </Button>
+          </Paper>
+        </Box>}
+
+
+        {/* Main Content */}
+        {recommendation?.data && recommendation?.data.length !== 0 &&  <Box sx={{ flex: 1 }}>
+          <Typography variant="h4" sx={{ marginBottom: '20px', marginTop:'10px', color: '#0071A1', fontWeight: 'bold' }}>
+            Your Personalized Recommendations
+          </Typography>
+          {recommendation?.data.map((group: any, groupIndex: any) => (
+            <Card key={groupIndex} sx={{ marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+              <CardContent>
+                <Typography variant="h6" sx={{ color: 'black', borderBottom: '1px solid #e0e0e0', padding: '10px 20px', fontWeight: 'bold' }}>
+                  {group.title}
                 </Typography>
-                <IconButton onClick={() => toggleExpansion(groupIndex)} size="large">
-                  {expandedState[groupIndex] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
-              </Box>
-            </CardContent>
-          </Card>
-        ))}
+                <Paper sx={{ marginTop: '10px' }}>
+                  <Table>
+                    <TableHead>
+                      <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                        <TableCell sx={{ fontWeight: 'bold' }}>Problem</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 'bold' }}>Difficulty</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 'bold' }}>Acceptance Rate</TableCell>
+                        <TableCell align="right" sx={{ fontWeight: 'bold' }}>Submissions</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {(expandedState[groupIndex] ? group.problems : group.problems.slice(0, 3)).map((problem:any, problemId:any) => (
+                        <TableRow key={problemId} sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#efefef' } }} onClick={() => handleRowClick(problem.problemId)}>
+                          <TableCell component="th" scope="row">
+                            {toTitleCase(problem.problemId)}
+                          </TableCell>
+                          <TableCell align="right" sx={{ color: convertDifficultyLevelToColor(problem.difficultyLevel) }}>
+                            {problem.difficultyLevel}
+                          </TableCell>
+                          <TableCell align="right">{problem.acceptanceRate}</TableCell>
+                          <TableCell align="right">{problem.submissions}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </Paper>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'initial', mt: 1 }}>
+                  <Typography variant="body2">
+                    {expandedState[groupIndex] ? 'Less Problems' : 'More Problems'}
+                  </Typography>
+                  <IconButton onClick={() => toggleExpansion(groupIndex)} size="large">
+                    {expandedState[groupIndex] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                  </IconButton>
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>}
       </Box>
+
     </Box>
 );
 
