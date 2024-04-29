@@ -41,7 +41,7 @@ def token_required(f):
 
             if exists:
                 session['new_user'] = False
-                user_info_exists = user.userInfoUpdatedTs is None
+                user_info_exists = user.userInfoUpdatedTs is not None
                 session['user_info_exists'] = user_info_exists
                 session['username'] = user.username
             else:

@@ -186,4 +186,15 @@ def get_user_history(user_id : str, limit):
     
     most_recent_history = sorted(user_info.history, key=lambda x: x.last_update)
     return_length = min(limit, len(most_recent_history))
-    return jsonify(most_recent_history[:return_length]), 200
+    recent_history = []
+    for history in most_recent_history[:return_length]:
+        log = {}
+        log['problem_id'] = history.problem_id
+        log['accepted'] = history.problem_log[0].accepted
+        log['runtime'] = history.problem_log[0].runtime
+        log['memory'] = history.problem_log[0].memory
+        log['time_beats'] = history.problem_log[0].time_beats
+        log['memory_beats'] = history.problem_log[0].memory_beats
+        recent_history.append(log)
+
+    return jsonify(recent_history), 200
