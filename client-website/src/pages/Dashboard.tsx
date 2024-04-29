@@ -2,10 +2,12 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux"
 import { setRecommendation } from "../features/user/userSlice";
-import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles, Card, CardContent } from "@mui/material";
+import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles, Card,LinearProgress, CardContent } from "@mui/material";
 import { Box, display } from "@mui/system";
+import { toTitleCase, normalizeDashes, convertDifficultyLevelToColor } from "../utility";
+import { blue, green, red } from '@mui/material/colors';
 
-const SESSION_LIMIT = 20
+const SESSION_LIMIT = 1
 const BASE_URL = 'http://localhost:3000/'
 const RECOMMENDATION_URL = 'user/decorRecommendation'
 
@@ -16,6 +18,12 @@ function getTimeDiffInMinutes(timestamp1 : any, timestamp2 : any)
     const diffMilliseconds = timestamp2 - timestamp1;
     return diffMilliseconds / (1000 * 60);
 }
+
+const stats = {
+  problemsSolved: 150,
+  totalAttempts: 300,
+  successRate: 50
+};
 
 const styles = {
   root: {
@@ -86,7 +94,7 @@ function Dashboard() {
   }
 
   const handleRowClick = (problemId: string)=>{
-    const leet_problem_url = `https://leetcode.com/problems/${problemId}`
+    const leet_problem_url = `https://leetcode.com/problems/${normalizeDashes(problemId)}`
     window.open(leet_problem_url, '_blank')
   };
 
@@ -108,45 +116,84 @@ function Dashboard() {
     )
   }
 
+  const calculateProgressColor = (percentage: any) => {
+    if (percentage < 33) return red[500];
+    if (percentage < 66) return blue[500];
+    return green[500];
+  };
+
 return (
-  <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-  <Typography variant="h4" sx={{ marginTop: '20px', marginBottom: '20px', color: 'darkblue', fontWeight: 'bold' }}>
-    Your Personalized Recommendations
-  </Typography>
-  {recommendation?.data.map((group: any, groupIndex: any) => (
-    <Card key={groupIndex} sx={{ width: '90%', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginBottom: '20px' }}>
+  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'start', p: 3 }}>
+      {/* Stats Card */}
+      <Card sx={{ width: '25%', minHeight: 500,position: 'fixed', top: '21%', left: 50, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
       <CardContent>
-        <Typography variant="h6" sx={{ color: 'black', borderBottom: '1px solid #e0e0e0', padding: '10px 20px', fontWeight: 'bold' }}>
-          {group.title}
+          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 2 }}>
+            User Stats
+          </Typography>
+          <Box sx={{ mb: 2 }}>
+            <Typography sx={{ mb: 1, fontWeight: 'bold' }}>Problems Solved</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <LinearProgress variant="determinate" value={(stats.problemsSolved / stats.totalAttempts) * 100} sx={{ flexGrow: 1, mr: 1, height: 10, borderRadius: 5, backgroundColor: '#eee' }} />
+              <Typography variant="body2">{`${stats.problemsSolved} / ${stats.totalAttempts}`}</Typography>
+            </Box>
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography sx={{ mb: 1, fontWeight: 'bold' }}>Total Attempts</Typography>
+            <Typography>{stats.totalAttempts}</Typography>
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography sx={{ mb: 1, fontWeight: 'bold' }}>Success Rate</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <LinearProgress variant="determinate" value={stats.successRate} color="primary" sx={{ flexGrow: 1, mr: 1, height: 10, borderRadius: 5, backgroundColor: calculateProgressColor(stats.successRate) }} />
+              <Typography variant="body2">{`${stats.successRate}%`}</Typography>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Main Content */}
+      <Box sx={{ flex: 1, maxWidth: '60%', ml: '25%', mt: 2 }}>
+        <Typography variant="h4" sx={{ marginBottom: '20px', color: '#0071A1', fontWeight: 'bold' }}>
+          Your Personalized Recommendations
         </Typography>
-        <Paper sx={{ marginTop: '10px' }}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
-                <TableCell sx={{ fontWeight: 'bold' }}>Problem</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Difficulty</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Acceptance Rate</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Submissions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {group.problems.map((problem: any, problemId: any) => (
-                <TableRow key={problemId} sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#efefef' } }} onClick={() => handleRowClick(problem.problemId)}>
-                  <TableCell component="th" scope="row">
-                    {problem.problemId}
-                  </TableCell>
-                  <TableCell align="right">{problem.difficultyLevel}</TableCell>
-                  <TableCell align="right">{problem.acceptanceRate}</TableCell>
-                  <TableCell align="right">{problem.submissions}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Paper>
-      </CardContent>
-    </Card>
-  ))}
-</Box>
+        {recommendation?.data.map((group, groupIndex) => (
+          <Card key={groupIndex} sx={{ marginBottom: '20px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+            <CardContent>
+              <Typography variant="h6" sx={{ color: 'black', borderBottom: '1px solid #e0e0e0', padding: '10px 20px', fontWeight: 'bold' }}>
+                {group.title}
+              </Typography>
+              <Paper sx={{ marginTop: '10px' }}>
+                <Table>
+                  <TableHead>
+                    <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                      <TableCell sx={{ fontWeight: 'bold' }}>Problem</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>Difficulty</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>Acceptance Rate</TableCell>
+                      <TableCell align="right" sx={{ fontWeight: 'bold' }}>Submissions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {group.problems.map((problem, problemId) => (
+                      <TableRow key={problemId} sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#efefef' } }} onClick={() => handleRowClick(problem.problemId)}>
+                        <TableCell component="th" scope="row">
+                          {toTitleCase(problem.problemId)}
+                        </TableCell>
+                        <TableCell sx={{
+                            color: convertDifficultyLevelToColor(problem.difficultyLevel),
+                            alignItems: 'center',
+                        }}align="right">{problem.difficultyLevel}</TableCell>
+                        <TableCell align="right">{problem.acceptanceRate}</TableCell>
+                        <TableCell align="right">{problem.submissions}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Paper>
+            </CardContent>
+          </Card>
+        ))}
+      </Box>
+    </Box>
 );
 
 }

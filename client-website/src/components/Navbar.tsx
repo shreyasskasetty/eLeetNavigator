@@ -4,12 +4,10 @@ import { useDispatch } from "react-redux";
 import { setSignedIn } from "../features/user/userSlice";
 import { setOpen } from "../features/ui/modalSlice";
 import { setIsLoading } from "../features/ui/commonSlice";
-import { useEffect, useState } from "react";
 
 function Navbar() {
   const isSignedIn = useSelector((state: any) => state.user.isSignedIn);
   const dispatch = useDispatch();
-  const [noGridColumns, setNoGridColumns] = useState(1);
   const handleDashboardClick = () =>{
     window.location.href = "/dashboard"
   }
@@ -32,17 +30,15 @@ function Navbar() {
     }
   }
 
-  useEffect(()=>{
-    console.log(isSignedIn);
-    isSignedIn?setNoGridColumns(2):setNoGridColumns(1);
-  },[isSignedIn]);
-    
   return (
     <div className="bg-gray-800 text-white p-3 flex justify-between items-center">
-       <a className="logo" href="/">
+      <div className="flex justify-around">
+       <a className="logo mr-2 ml-2" href="/">
           <img src="src/assets/logo2.png" alt="Logo" className="h-8 w-auto" />
-        </a>
-      <div className={`inline-grid grid-cols-${noGridColumns} gap-4`}>
+      </a>
+      <p className="text-2xl font-semibold text-white dark:text-white">ELeetNavigator</p>
+      </div>
+      <div className={`inline-grid grid-cols-${isSignedIn?2:1} gap-4`}>
         {
           isSignedIn?
           <button className="bg-slate-400 mr-2 hover:bg-slate-600 text-white font-bold py-1 px-4 rounded" onClick={()=>{handleDashboardClick()}}>
