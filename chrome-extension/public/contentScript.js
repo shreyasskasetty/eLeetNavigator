@@ -36,11 +36,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     response_data['problem_log'] = [problem_log]
     console.log(response_data);
-    (async () => {
-      const response = await chrome.runtime.sendMessage({type: "PROBLEM_LOG",response_data});
-      // do something with response here, not outside the function
-      console.log(response);
-    })();
+    // (async () => {
+    //   const response = await chrome.runtime.sendMessage({type: "PROBLEM_LOG",response_data});
+    //   // do something with response here, not outside the function
+    //   console.log(response);
+    // })();
+    sendResponse({...response_data})
     return true; // If you are using asynchronous sendResponse
   }
   if(message.type == "GET_USER_PROFILE_DATA"){
@@ -170,7 +171,7 @@ function extractData() {
   solved_problems.push(easy);
   solved_problems.push(medium);
   solved_problems.push(hard);
-  let rank = document.querySelector("span.text-label-1")?.innerText ? parseInt(document.querySelector("span.text-label-1").innerText) : 0;
+  let rank = document.querySelector("span.ttext-label-1")?.innerText ? parseInt(document.querySelector("span.ttext-label-1").innerText.replace(',', '')) : 0;
   let username = document ? document.querySelector(".space-x-4 div.text-label-3")?.innerText || null : null;  
 
   let streak = document ? document.querySelector("div.space-x-1:nth-of-type(2) span.font-medium")?.innerText || null : null;

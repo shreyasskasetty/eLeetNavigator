@@ -50,7 +50,6 @@ def token_required(f):
                 name = idinfo['name']
                 imageUrl = idinfo['picture']
                 status, _ = create_user(user_id, emailId, name, imageUrl)
-                print(user_id)
                 if not status:
                     return ({'error': 'Unable to create user'}), 400
                 

@@ -66,6 +66,10 @@ def create_user_info(userInfo: UserInfo, retry: int):
         response = {"message" : "username doesn't exist in the records. Register at the dashboard."}
         return jsonify(response), 400
     
+    if user.username != userInfo.username:
+        print("Different user")
+        response = {"message" : "Different user"}
+        return jsonify(response), 400
 
     exists, _ = get_user_info_exists(userInfo.userId)
     if exists:
@@ -94,6 +98,11 @@ def update_user_info(updatedUserInfo: UserInfo, retry : int):
 
     if not exists:
         return create_user_info(updatedUserInfo, retry)
+    
+    if user_info.username != updatedUserInfo.username:
+        print('Unauthorized user update')
+        response = {"message" : "Unauthorized user update"}
+        return jsonify(response), 400 
     
     exists, user = check_user_exists(updatedUserInfo.userId)
 
