@@ -1,3 +1,21 @@
+function showNotification(message, duration = 5000) {
+    const notification = document.getElementById('notification');
+    notification.textContent = message;
+    notification.classList.replace('my-extension-hidden', 'my-extension-visible');
+    console.log(message);
+    // Hide the notification after 'duration' milliseconds
+    setTimeout(() => {
+        hideNotification();
+    }, duration);
+}
+
+
+function hideNotification() {
+    const notification = document.getElementById('notification');
+    notification.classList.replace('my-extension-visible', 'my-extension-hidden');
+}
+
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if(message.type == "GET_PROBLEM_DATA"){
     // Your code here to handle the message
@@ -44,6 +62,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     sendResponse({...response_data})
     return true; // If you are using asynchronous sendResponse
   }
+  
   if(message.type == "GET_USER_PROFILE_DATA"){
     console.log("Delayed: Page loaded and content is being scanned.");
     let userElement = document.querySelector("div.break-all");
@@ -64,6 +83,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
     executeWithDelay(2000);
   }
+  
+  if (message.type === 'show-notification') {
+    console.log('Notification Received')
+    showNotification(message.message, 3000);
+    sendResponse({message: 'Notification Recieved'});
+  }
+
 });
 
 function executeWithDelay(delay) {
@@ -202,3 +228,47 @@ function extractData() {
         streak: streak
     };
 }
+
+
+function injectNotificationHTML() {
+    const notification = document.createElement('div');
+    notification.id = 'my-extension-notification';
+    notification.className = 'my-extension-hidden'; 
+    document.body.appendChild(notification);    
+}
+
+// Function to inject styles for the notification
+function injectStyles() {
+    const styleId = 'my-extension-styles'; // Unique ID for the style element
+
+    // Check if the styles have already been injected
+    if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = `
+            #my-extension-notification {
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                background-color: #4CAF50;
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                box-shadow: 0 0 5px rgba(0,0,0,0.2);
+                z-index: 1000;
+            }
+            .my-extension-hidden {
+                display: none;
+            }
+            .my-extension-visible {
+                display: block;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+
+// Inject HTML and styles on script load
+injectNotificationHTML();
+injectStyles();

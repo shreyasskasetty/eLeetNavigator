@@ -8,7 +8,7 @@
   "background": {
     "service_worker": "service-worker.js"
   },
-  "permissions": ["cookies", "scripting", "tabs", "storage"],
+  "permissions": ["cookies", "scripting", "tabs", "storage", "notifications"],
   "icons": {
     "32": "logo2.png"
   },

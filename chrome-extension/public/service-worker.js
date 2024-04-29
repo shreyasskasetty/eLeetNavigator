@@ -18,6 +18,16 @@ function getTimeDiffInMinutes(timestamp1, timestamp2)
     return diffMilliseconds / (1000 * 60);
 }
 
+function notify(message, title) {
+    chrome.notifications.create('', {
+        type: 'basic',
+        iconUrl: 'logo2.png',
+        title: title,
+        message: message,
+        priority: 1
+    }, function(notificationId) {});
+}
+
 async function loadRecommendation(user_id){
     try {
         response = await fetch(`${BASE_URL}${RECOMMENDATION_URL}?user_id=${user_id}&limit=${RECOMMENDATION_LIMIT}`, {
@@ -240,13 +250,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
          // Assuming `message` is the data you want to send to your backend
          chrome.storage.local.get(['user_id', 'username'],function(result){
-
+           
             if(result.username !== message.userInfo.username)
             {
                 console.log('Unauthorized user name')
                 sendResponse({ status: "Unauthorized user name" });
             }
             else{
+                notify('ELeetNavigator','User profile scan has Completed')
+                chrome.runtime.sendMessage({type: 'show-notification', message: 'Profile scan completed'});
                 message.userInfo.userId = result.user_id;
                 console.log("GET USER INFO")
                 console.log(message)
@@ -304,6 +316,7 @@ async function getUserData()
 
 let debounceTimer;
 let dataDebounceTimer;
+let notificationDebounceTimer;
 
 async function sendProblemLog(problemLog){
     data = await getUserData();
@@ -344,12 +357,23 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
             {    
                 chrome.storage.local.set({'user_id':data.user_id,'username':data.username});
                 dataDebounceTimer = setTimeout(async () => {
+                    notify('ELeetNavigator','User profile scan has started')
                     const response = await chrome.tabs.sendMessage(tab.id, {type:"GET_USER_PROFILE_DATA", url:`${tab.url}${data.username}/`});
+                }, 2000);
+
+                clearTimeout(notificationDebounceTimer);    
+                notificationDebounceTimer = setTimeout(async () => {
+                    const notification_response = chrome.tabs.sendMessage(tab.id, {type: 'show-notification', message: 'Profile scan started'});
+                    notification_response.then((res)=>{
+                        console.log(res)
+                    }).catch((error)=>{
+                        console.log(error)
+                    })
                 }, 2000);
             }
 
         } catch (error) {
-            
+             console.error("Failed to handle user profile data:", error);
         }
     }
 });
