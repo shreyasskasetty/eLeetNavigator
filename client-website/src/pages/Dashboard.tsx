@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux"
 import { setRecommendation } from "../features/user/userSlice";
-import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles } from "@mui/material";
+import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles, Card, CardContent } from "@mui/material";
 import { Box, display } from "@mui/system";
 
 const SESSION_LIMIT = 20
@@ -71,26 +71,6 @@ function Dashboard() {
   {
     const user_id = userInfo.user_id
     console.log(user_id)
-    const data = [
-      {
-        title : "A",
-        problems : [
-          {
-            problemId : "ABC",
-            difficultyLevel : "Hard"
-          }
-        ]
-      },
-      {
-        title : "B",
-        problems : [
-          {
-            problemId : "ABC",
-            difficultyLevel : "Hard"
-          }
-        ]
-      }
-    ]
     try {
       const response = await loadRecommendation(user_id)
       if(response.status){
@@ -105,6 +85,11 @@ function Dashboard() {
     }
   }
 
+  const handleRowClick = (problemId: string)=>{
+    const leet_problem_url = `https://leetcode.com/problems/${problemId}`
+    window.open(leet_problem_url, '_blank')
+  };
+
   useEffect(()=>{
     let shouldRefresh = recommendation.data ? false : true
     shouldRefresh = getTimeDiffInMinutes(recommendation.updateTs , Date.now()) > SESSION_LIMIT
@@ -118,48 +103,35 @@ function Dashboard() {
   {
     return (
       <div>
-        Dashboard
+        No Recommendation at this point
       </div>
     )
   }
 
 return (
-  <Box sx={{
-    flex: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center'
-  }}>
-    {
-    recommendation?.data.map((group : any, groupIndex : any)=>(
-      <Box key={groupIndex}>
-        <Typography
-        sx={{
-            color: 'black', // Sets the text color to grey
-            borderColor: 'black', // Sets the border color to grey
-            borderWidth: '1px', // Sets the border width to 1px
-            borderBottom: '1px solid #e0e0e0',
-            borderTop: '1px solid #e0e0e0',
-            padding: '10px 0px 10px 20px', // Adds some vertical padding for visual spacing
-            fontWeight: 'bold',
-        }}
-        >
-        {group.title}
+  <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+  <Typography variant="h4" sx={{ marginTop: '20px', marginBottom: '20px', color: 'darkblue', fontWeight: 'bold' }}>
+    Your Personalized Recommendations
+  </Typography>
+  {recommendation?.data.map((group: any, groupIndex: any) => (
+    <Card key={groupIndex} sx={{ width: '90%', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', marginBottom: '20px' }}>
+      <CardContent>
+        <Typography variant="h6" sx={{ color: 'black', borderBottom: '1px solid #e0e0e0', padding: '10px 20px', fontWeight: 'bold' }}>
+          {group.title}
         </Typography>
-        <div >
-        <Paper style={styles.root} >
-          <Table style={styles.table}>
+        <Paper sx={{ marginTop: '10px' }}>
+          <Table>
             <TableHead>
-              <TableRow>
-                <TableCell>Problem</TableCell>
-                <TableCell align="right">Difficulty</TableCell>
-                <TableCell align="right">Accepatance Rate</TableCell>
-                <TableCell align="right">Submissions</TableCell>
+              <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+                <TableCell sx={{ fontWeight: 'bold' }}>Problem</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Difficulty</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Acceptance Rate</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Submissions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {group.problems.map((problem, problemId) => (
-                <TableRow key={problemId}>
+              {group.problems.map((problem: any, problemId: any) => (
+                <TableRow key={problemId} sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#efefef' } }} onClick={() => handleRowClick(problem.problemId)}>
                   <TableCell component="th" scope="row">
                     {problem.problemId}
                   </TableCell>
@@ -171,13 +143,11 @@ return (
             </TableBody>
           </Table>
         </Paper>
-        </div>
-      </Box>
-    ))
-  }
-  </Box>
-
-)
+      </CardContent>
+    </Card>
+  ))}
+</Box>
+);
 
 }
 

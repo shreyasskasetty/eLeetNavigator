@@ -4,10 +4,12 @@ import { useDispatch } from "react-redux";
 import { setSignedIn } from "../features/user/userSlice";
 import { setOpen } from "../features/ui/modalSlice";
 import { setIsLoading } from "../features/ui/commonSlice";
+import { useEffect, useState } from "react";
 
 function Navbar() {
   const isSignedIn = useSelector((state: any) => state.user.isSignedIn);
   const dispatch = useDispatch();
+  const [noGridColumns, setNoGridColumns] = useState(1);
   const handleDashboardClick = () =>{
     window.location.href = "/dashboard"
   }
@@ -29,7 +31,11 @@ function Navbar() {
       dispatch(setOpen(true));
     }
   }
-  const noGridColumns = isSignedIn?2:1;
+
+  useEffect(()=>{
+    console.log(isSignedIn);
+    isSignedIn?setNoGridColumns(2):setNoGridColumns(1);
+  },[isSignedIn]);
     
   return (
     <div className="bg-gray-800 text-white p-3 flex justify-between items-center">
