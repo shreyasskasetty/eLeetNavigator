@@ -45,7 +45,7 @@ function Navbar() {
        <a className="logo mr-2 ml-2" href="/">
           <img src="src/assets/logo2.png" alt="Logo" className="h-8 w-auto" />
       </a>
-      <p className="text-2xl font-semibold text-white dark:text-white">ELeetNavigator</p>
+      <p className="text-2xl font-semibold text-white dark:text-white">eLeetNavigator</p>
       </div>
       <div className={`inline-grid grid-cols-${isSignedIn?2:1} gap-4`}>
         {
