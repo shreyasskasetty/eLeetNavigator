@@ -14,6 +14,7 @@ from app.components.Recommendation_based_on_difficulty import DifficultyBasedRec
 from app.components.Cold_start_recommendation import ColdStartRecommendation
 from app.components.Problem_decorator import ProblemDecorator
 from app.components.SequentialRecommendation import SequentialRecommendation
+from app.components.Popularity_recommendation import PopularityRecommendation
 from app.models.mongodb_models import db, User
 from flask import current_app
 from flask_cors import CORS
@@ -42,7 +43,7 @@ def create_app(config_class=DevelopmentConfig):
     @app.before_request
     def load_recommendation_list():
         if 'recom_list' not in current_app.config:
-            current_app.config['recom_list'] = [SequentialRecommendation(),ContentBased(), BasedOnLastNProblems(), DifficultyBasedRecommendation()]
+            current_app.config['recom_list'] = [PopularityRecommendation(), SequentialRecommendation(), ContentBased(), BasedOnLastNProblems(), DifficultyBasedRecommendation()]
             current_app.config['prob_decor'] = ProblemDecorator()
             current_app.config['cold_start_recom'] = ColdStartRecommendation()
 

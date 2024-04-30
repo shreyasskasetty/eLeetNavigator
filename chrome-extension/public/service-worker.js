@@ -341,9 +341,9 @@ async function sendProblemLog(problemLog){
         chrome.storage.local.set({use_stored_recents : false})
             console.log(response);
             if(response.status === 200){
-                notify('ELeetNavigator','User profile scan has Completed')
+                notify('ELeetNavigator','Scan Completed')
             }else{
-                notify('ELeetNavigator','User profile scan has Failed')
+                notify('ELeetNavigator','Scan Failed')
             }
             return response.json();
         }
@@ -351,7 +351,7 @@ async function sendProblemLog(problemLog){
     .then(data => console.log('Success:', data))
     .catch((error) => {
         console.error('Error:', error)
-        notify('ELeetNavigator','User profile scan has Failed')
+        notify('ELeetNavigator','Scan Failed')
     });
 }
 

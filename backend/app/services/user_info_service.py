@@ -78,6 +78,8 @@ def create_user_info(userInfo: UserInfo, retry: int):
         return jsonify(response), 400
 
     try:
+        for history in userInfo.history[::-1]:
+            history.last_update = datetime.now()
         current_timestamp = datetime.now()
         timestamp_string = current_timestamp.strftime("%Y-%m-%d %H:%M:%S")
         user.userInfoUpdatedTs = timestamp_string

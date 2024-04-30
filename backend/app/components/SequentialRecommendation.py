@@ -93,10 +93,13 @@ class SequentialRecommendation(RecommendationService):
 
 
     def get_recommendation(self, user_info: str, limit=10)->Recommendation:
-        latest_n_prob_id = self.get_latest_n_prob_id(user_info)
-        # recom_list = self.get_nlargest(latest_n_prob_id, user_info, limit)
-        recom_list = self.recommend_based_on_sequence(latest_n_prob_id, user_info.username, 3)
-        if not recom_list:
+        try:
+            latest_n_prob_id = self.get_latest_n_prob_id(user_info)
+            # recom_list = self.get_nlargest(latest_n_prob_id, user_info, limit)
+            recom_list = self.recommend_based_on_sequence(latest_n_prob_id, user_info.username, 3)
+            if not recom_list:
+                return None
+            return Recommendation(f"Next challenge for you 🫵🏻", recom_list[-2:])
+        except:
             return None
-        return Recommendation(f"Next challenge for you", recom_list[-2:])
 

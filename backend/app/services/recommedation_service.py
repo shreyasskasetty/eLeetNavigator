@@ -15,6 +15,12 @@ def get_recommendation(userId: str, limit):
         recom = recommender.get_recommendation(user_info, limit)
         results.append(recom.getDict())
         return results, 200
+
+    if len(user_info.history) == 0:
+        recommender = current_app.config['cold_start_recom']
+        recom = recommender.get_recommendation(user_info, limit)
+        results.append(recom.getDict())
+        return results, 200
         
     recom_list = current_app.config["recom_list"]
     for rl in recom_list:

@@ -68,5 +68,5 @@ class BasedOnLastNProblems(RecommendationService):
         recom_list = self.get_nlargest(latest_n_prob_id, user_info, limit)
         if not recom_list:
             return None
-        return Recommendation(f"Problems similar to last {self.n - 1} solved problems", recom_list)
+        return Recommendation(f"Problems similar to last {self.n - 1} solved problems 👀", recom_list)
 

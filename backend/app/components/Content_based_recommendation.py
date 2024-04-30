@@ -54,5 +54,5 @@ class ContentBased(RecommendationService):
         recom_list = self.get_nlargest(latest_prob_id, user_info, limit)
         if not recom_list:
             return None
-        return Recommendation(f"Problems similar to {to_title_case(latest_prob_id)}", recom_list)
+        return Recommendation(f"Problems similar to {to_title_case(latest_prob_id)} 🥰", recom_list)
 

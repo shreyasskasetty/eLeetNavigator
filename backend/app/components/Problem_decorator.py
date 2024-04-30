@@ -17,7 +17,7 @@ class ProblemDecorator:
             problem['problemId'] = probId
             return problem
         except:
-            problem['difficultyLevel'] = "Solvable"
+            problem['difficultyLevel'] = "Medium"
             problem['acceptanceRate'] = "Unknown"
             problem['submissions'] = "Unknown"
             problem['problemId'] = probId
