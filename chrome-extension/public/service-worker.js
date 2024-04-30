@@ -229,7 +229,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
     else if(message.type == "PROBLEM_LOG"){
         chrome.storage.local.get(['user_id'],function(result) {
-            notify('ELeetNavigator','Problem submission has been logged successfully')
             console.log(result.user_id)
             fetch(`${BASE_URL}${PROBLEM_LOG_URL}?user_id=${result.user_id}`, {
                 method: 'POST',
@@ -240,13 +239,19 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             })
             .then(response => {
                     console.log(response);
+                    if(response.status === 200){
+                        notify('ELeetNavigator','Problem submission has been logged successfully')
+                    }
                     return response.json();
                 }
             )
             .then(data => console.log('Success:', data))
-            .catch((error) => console.error('Error:', error));
+            .catch((error) => {console.error('Error:', error)
+                    notify('ELeetNavigator','Problem submission failed')
+            });
             // console.log(message)
             // Optionally, you can use sendResponse to send data back to the content script
+           
             setTimeout(function() {
                 sendResponse({ status: "Data sent to backend" });
             },1000);
@@ -262,7 +267,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 sendResponse({ status: "Unauthorized user name" });
             }
             else{
-                notify('ELeetNavigator','User profile scan has Completed')
+              
                 chrome.runtime.sendMessage({type: 'show-notification', message: 'Profile scan completed'});
                 message.userInfo.userId = result.user_id;
                 console.log("GET USER INFO")
@@ -335,11 +340,19 @@ async function sendProblemLog(problemLog){
     .then(response => {
         chrome.storage.local.set({use_stored_recents : false})
             console.log(response);
+            if(response.status === 200){
+                notify('ELeetNavigator','User profile scan has Completed')
+            }else{
+                notify('ELeetNavigator','User profile scan has Failed')
+            }
             return response.json();
         }
     )
     .then(data => console.log('Success:', data))
-    .catch((error) => console.error('Error:', error));
+    .catch((error) => {
+        console.error('Error:', error)
+        notify('ELeetNavigator','User profile scan has Failed')
+    });
 }
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
