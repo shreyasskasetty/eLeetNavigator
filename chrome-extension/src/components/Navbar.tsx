@@ -32,6 +32,7 @@ function Navbar() {
                 color: 'black',
                 textDecoration: 'none',
                 }}
+                onClick={()=>{window.open("http://localhost:3001/dashboard",'_blank')}}
             >
             eLeetNavigator
             </Typography>
