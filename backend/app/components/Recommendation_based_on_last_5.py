@@ -64,7 +64,7 @@ class BasedOnLastNProblems(RecommendationService):
 
     def get_recommendation(self, user_info: str, limit=10)->Recommendation:
         latest_n_prob_id = self.get_latest_n_prob_id(user_info)
-        print("Max Prob is: ", latest_n_prob_id)
+        print("Last 5 Based", latest_n_prob_id)
         recom_list = self.get_nlargest(latest_n_prob_id, user_info, limit)
         if not recom_list:
             return None

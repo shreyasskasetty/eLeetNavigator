@@ -13,6 +13,7 @@ from app.components.Recommendation_based_on_last_5 import BasedOnLastNProblems
 from app.components.Recommendation_based_on_difficulty import DifficultyBasedRecommendation
 from app.components.Cold_start_recommendation import ColdStartRecommendation
 from app.components.Problem_decorator import ProblemDecorator
+from app.components.SequentialRecommendation import SequentialRecommendation
 from app.models.mongodb_models import db, User
 from flask import current_app
 from flask_cors import CORS
@@ -40,9 +41,10 @@ def create_app(config_class=DevelopmentConfig):
     
     @app.before_request
     def load_recommendation_list():
-        current_app.config['recom_list'] = [ContentBased(), BasedOnLastNProblems(), DifficultyBasedRecommendation()]
-        current_app.config['prob_decor'] = ProblemDecorator()
-        current_app.config['cold_start_recom'] = ColdStartRecommendation()
+        if 'recom_list' not in current_app.config:
+            current_app.config['recom_list'] = [SequentialRecommendation(),ContentBased(), BasedOnLastNProblems(), DifficultyBasedRecommendation()]
+            current_app.config['prob_decor'] = ProblemDecorator()
+            current_app.config['cold_start_recom'] = ColdStartRecommendation()
 
     @login_manager.user_loader
     def load_user(user_id):

@@ -65,8 +65,9 @@ class DifficultyBasedRecommendation(RecommendationService):
 
     def get_recommendation(self, user_info: str, limit=10)->Recommendation:
         latest_n_prob_id = self.get_latest_n_prob_id(user_info)
+        print("Difficulty Based", latest_n_prob_id)
         recom_list = self.get_nlargest(latest_n_prob_id, user_info, limit)
         if not recom_list:
             return None
-        return Recommendation(f"Difficulty based similar problems", recom_list)
+        return Recommendation(f"Problems of similar difficulty level", recom_list)
 

@@ -40,7 +40,7 @@ class ProblemLog(EmbeddedDocument):
 class History(EmbeddedDocument):
     problem_id = fields.StringField(required=True)
     problem_log = fields.ListField(fields.EmbeddedDocumentField(ProblemLog))
-    last_update = fields.DateTimeField(required=False, default=datetime.now())
+    last_update = fields.DateTimeField(required=False)
 
     def __repr__(self):
         problem_logs_str = ', '.join([repr(log) for log in self.problem_log])

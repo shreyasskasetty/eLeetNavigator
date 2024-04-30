@@ -147,12 +147,13 @@ def update_problem_log(userId:str, history:History, retry:int):
     problem_history = next((log for log in user_info.history if log.problem_id == problem_id ), None)
 
     if problem_history is None:
+        history.last_update = datetime.now()
         user_info.history.append(history)
     else:
         for log in history.problem_log:
             problem_history.problem_log.append(log)
 
-        problem_history.last_update = history.last_update
+        problem_history.last_update = datetime.now()
     try:
         user_info.save()
         response = {"message" : "Update Successful."}
