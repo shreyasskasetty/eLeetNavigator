@@ -32,7 +32,9 @@ export const notificationSlice = createSlice({
         console.log("dispatched action setAlertConfig for notifications")
         return {
             ...state, 
-            alertConfig: action.payload
+            alertConfig: {
+              ...action.payload
+            }
         }
     },
   },

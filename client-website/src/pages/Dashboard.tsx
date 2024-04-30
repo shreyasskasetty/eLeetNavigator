@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux"
 import { setRecommendation , setUserInfo} from "../features/user/userSlice";
 import { Paper, Table, TableBody, TableCell, TableHead, TableRow, Typography, withStyles, Card,LinearProgress, CardContent, Button } from "@mui/material";
 import { Box, display } from "@mui/system";
-import { toTitleCase, normalizeDashes, convertDifficultyLevelToColor } from "../utility";
+import {normalizeDashes, convertDifficultyLevelToColor, formatProblemString } from "../utility";
 import { blue, green, red } from '@mui/material/colors';
 import { useState } from "react";
 import { IconButton } from '@mui/material';
@@ -268,7 +268,7 @@ return (
                       {(expandedState[groupIndex] ? group.problems : group.problems.slice(0, 3)).map((problem:any, problemId:any) => (
                         <TableRow key={problemId} sx={{ cursor: 'pointer', '&:hover': { backgroundColor: '#efefef' } }} onClick={() => handleRowClick(problem.problemId)}>
                           <TableCell component="th" scope="row">
-                            {toTitleCase(problem.problemId)}
+                            {formatProblemString(problem.problemId)}
                           </TableCell>
                           <TableCell align="right" sx={{ color: convertDifficultyLevelToColor(problem.difficultyLevel) }}>
                             {problem.difficultyLevel}
